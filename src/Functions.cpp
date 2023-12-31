@@ -35,7 +35,6 @@ void wifiloop(){
 void motordriver(){
 
 
-
 }
 
 void cardsetup(){
