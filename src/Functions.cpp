@@ -1,6 +1,5 @@
 #include "Functions.h"
 
-
 MFRC522 mfrc522(2);
 
 

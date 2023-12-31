@@ -7,12 +7,17 @@
 #include <MFRC522.h>
 #include "rfid_functions.h"
 
-// Declaração das funções
+// Declare as funções
 void wifisetup();
 void wifiloop();
 void motordriver();
 void cardsetup();
 void cardloop();
+void myFunction1();
+void myFunction2();
+
 
 #endif 
+
+
 
