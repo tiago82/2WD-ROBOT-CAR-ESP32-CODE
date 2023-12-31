@@ -9,18 +9,28 @@
 #include "Pins.h"
 #include <BluetoothSerial.h>
 #include "Led.h"
+#include "PID_v1.h"
 
 // Declare as funções
 void wifiSetup();
 void wifiLoop();
+
 void testMotor(int speed); // testa motores com velocidades iguais da roda
 void testMotor(int speed1, int speed2); // testa motor com velocidades diferentes
+
 void cardSetup();
 void cardLoop();
 void myFunction1();
 void myFunction2();
+
 void btSetup(String BTName); // Escolha o nome do Bluetooth
 void btLoop();
+
+void pidSetup();
+void pidLoop();
+
+
+
 
 
 
