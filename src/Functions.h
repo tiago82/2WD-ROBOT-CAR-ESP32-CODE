@@ -11,6 +11,8 @@
 void wifisetup();
 void wifiloop();
 void motordriver();
+void cardsetup();
+void cardloop();
 
 #endif 
 

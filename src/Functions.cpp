@@ -4,6 +4,11 @@
 MFRC522 mfrc522(2);
 
 
+void myFunction1();
+void myFunction2();
+
+
+
 void wifisetup(){
 
 

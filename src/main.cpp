@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include "Functions.h"
+#include "Pins.h"
 
 
 #ifdef __has_include
@@ -14,14 +15,7 @@
 #endif
 
 
-#define EN1 21
-#define IN1 32
-#define IN2 33
-#define EN2 22
-#define IN3 25
-#define IN4 26
-#define M1_S1 16
-#define M2_S1 3
+
 
 MotorDriver motor(EN1, IN2, IN1, EN2, IN3, IN4);// EN1 IN1, IN2, EN2, IN3, IN4) (LEFT, RIGHT)
 EncoderReader encoderM1(M1_S1);
