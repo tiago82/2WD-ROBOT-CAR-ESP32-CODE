@@ -12,6 +12,7 @@
 #endif
 
 MFRC522 mfrc522(SS_RFID_PIN, RST_RFID_PIN);
+BluetoothSerial SerialBT;
 
 //==============Protótipos==========
 void myFunction1();
@@ -42,14 +43,11 @@ void cardsetup(){
   // Adicione funções para cartões específicos
   RFID::addCardFunction(mfrc522, 0x13494a10, myFunction1);
   RFID::addCardFunction(mfrc522, 0x03246010, myFunction2);
-
 }
 
 void cardloop(){
 // Verifique a presença de um cartão RFID
   RFID::checkRFIDPresent(mfrc522);
-
-
 }
 
 void myFunction1(){
@@ -61,4 +59,22 @@ void myFunction2(){
 // Implemente a lógica desejada para este cartão
 
 
+}
+
+
+void btsetup(String BTName){
+  
+  SerialBT.begin(BTName); // Nome do dispositivo Bluetooth
+  Serial.println("Espere a conexão Bluetooth...");
+}
+
+void btloop(){
+
+   if (SerialBT.available()) {
+    char incomingByte = SerialBT.read();
+    Serial.print("Received: ");
+    Serial.println(incomingByte);
+  }
+  
+  delay(500);
 }
