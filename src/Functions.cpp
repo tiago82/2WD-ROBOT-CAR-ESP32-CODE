@@ -11,6 +11,10 @@
     #endif
 #endif
 
+
+MotorDriver motor(EN1, IN2, IN1, EN2, IN3, IN4);// EN1 IN1, IN2, EN2, IN3, IN4) (LEFT, RIGHT)
+EncoderReader encoderM1(M1_S1);
+//EncoderReader encoderM2(M2_S1);
 MFRC522 mfrc522(SS_RFID_PIN, RST_RFID_PIN);
 BluetoothSerial SerialBT;
 
@@ -53,11 +57,9 @@ void cardloop(){
 void myFunction1(){
 // Implemente a lógica desejada para este cartão
 
-
 }
 void myFunction2(){
 // Implemente a lógica desejada para este cartão
-
 
 }
 
