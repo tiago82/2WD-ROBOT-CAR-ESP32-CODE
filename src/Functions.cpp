@@ -13,8 +13,6 @@
 
 MFRC522 mfrc522(SS_RFID_PIN, RST_RFID_PIN);
 
-
-
 //==============Protótipos==========
 void myFunction1();
 void myFunction2();
