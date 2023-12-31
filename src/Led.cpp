@@ -8,6 +8,13 @@ const long duration = 500; // Duração do acionamento do LED em milissegundos (
 long durationPiscar = 500;
 
 
+void ledSetup() {
+  pinMode(LED_PCB, OUTPUT);
+  digitalWrite(LED_PCB, LOW);
+
+}
+
+
 void ledLoop() {
   unsigned long currentMillis = millis(); // Obtém o tempo atual
   if (ledState && (currentMillis - previousMillis >= duration)) { // Verifica se passaram 2 segundos desde que o LED foi ligado

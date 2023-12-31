@@ -4,14 +4,14 @@
 #include <Arduino.h>
 #include "Pins.h"
 
-void ledSetup();
+void ledSetup(); //Declaração da função para configurar o LED
 
-void ledLoop();
-void acenderLed();
+void ledLoop(); //Declaração da função para controlar o LED em um loop contínuo
+void acenderLed(); 
 
-void ledLoopPiscar();
-void piscarLed(int numPiscadas);
-void piscarLed(int numPiscadas, int rate);
+void ledLoopPiscar(); // Declaração da função para controlar o LED piscando em um loop
+void piscarLed(int numPiscadas); // Declaração da função para piscar o LED um número específico de vezes
+void piscarLed(int numPiscadas, int rate); // Declaração da função para piscar o LED com um intervalo específico entre as piscadas
 
 
 #endif

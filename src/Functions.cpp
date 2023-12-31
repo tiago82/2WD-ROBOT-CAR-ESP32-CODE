@@ -37,7 +37,8 @@ void ledSetup();
 void acenderLed();
 void piscarLed(int numPiscadas);
 void piscarLed(int numPiscadas, int rate);
-//==================================
+
+//=================Test-WIFI=================
 
 
 void wifiSetup(){
@@ -47,7 +48,7 @@ void wifiSetup(){
 
 void wifiLoop(){
 
-
+//=====================Test Motor===============================================
 
 }
 
@@ -58,6 +59,8 @@ void testMotor(int speed){
 void testMotor(int speed1,int speed2){
   motor.setSpeed(speed1, speed2);
 }
+
+//=========================Test-RFID===========================================
 void cardSetup(){
 
 
@@ -86,7 +89,7 @@ Serial.print("funcao 2");
 piscarLed(4,100);
 }
 
-
+//===========================Test-Bluetooth=========================================
 void btSetup(String BTName){
   
   SerialBT.begin(BTName); // Nome do dispositivo Bluetooth
@@ -103,13 +106,9 @@ void btLoop(){
   
   delay(500);
 }
+//====================================================================
 
 
-void ledSetup() {
-  pinMode(LED_PCB, OUTPUT);
-  digitalWrite(LED_PCB, LOW);
-
-}
 
 
 
