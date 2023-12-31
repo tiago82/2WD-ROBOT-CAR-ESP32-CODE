@@ -26,8 +26,11 @@
 #define CSN_RFID_PIN 15 // Define o pino CSN do módulo NRF24L01
 
 //Led
+#define LED_PCB 4
 
 //Sonar
+#define ECHO_PIN 13
+#define TRIG_PIN 15
 
 
 
