@@ -8,6 +8,7 @@
 #include "rfid_functions.h"
 #include "Pins.h"
 #include <BluetoothSerial.h>
+#include "Led.h"
 
 // Declare as funções
 void wifiSetup();
@@ -20,6 +21,7 @@ void myFunction1();
 void myFunction2();
 void btSetup(String BTName); // Escolha o nome do Bluetooth
 void btLoop();
+
 
 
 #endif 

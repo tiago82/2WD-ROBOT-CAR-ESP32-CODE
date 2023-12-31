@@ -17,6 +17,9 @@
 #define RFID_MISO 19
 //#define RFID_RST 22
 
+
+
+
  
 
 
@@ -29,6 +32,11 @@ BluetoothSerial SerialBT;
 //==============Protótipos==========
 void myFunction1();
 void myFunction2();
+void acenderLED() ;
+void ledSetup();
+void acenderLed();
+void piscarLed(int numPiscadas);
+void piscarLed(int numPiscadas, int rate);
 //==================================
 
 
@@ -75,6 +83,7 @@ Serial.print("funcao 1");
 void myFunction2(){
 // Implemente a lógica desejada para este cartão
 Serial.print("funcao 2");
+piscarLed(4,100);
 }
 
 
@@ -94,5 +103,14 @@ void btLoop(){
   
   delay(500);
 }
+
+
+void ledSetup() {
+  pinMode(LED_PCB, OUTPUT);
+  digitalWrite(LED_PCB, LOW);
+
+}
+
+
 
 
