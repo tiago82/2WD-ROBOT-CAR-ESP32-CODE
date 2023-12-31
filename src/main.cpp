@@ -1,18 +1,9 @@
 #include <Arduino.h>
 #include "Functions.h"
-#include "Pins.h"
 
 
-#ifdef __has_include
-    #if __has_include("keys.h")
-        #include "keys.h"
-    #else // Se arquivo local não encontrado
-        #warning "Arquivo local de keys.h não encontrado, continuando a compilação sem ele. a senha do Wifi para conecxao será definida abaixo"
-        const char *ssid = "SeuWifi"; // Seu SSID de rede (nome)
-        const char *password = "suasenha"; // Sua senha de rede
-      
-    #endif
-#endif
+
+
 
 
 

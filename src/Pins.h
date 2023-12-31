@@ -32,6 +32,4 @@
 #define ECHO_PIN 13
 #define TRIG_PIN 15
 
-
-
 #endif

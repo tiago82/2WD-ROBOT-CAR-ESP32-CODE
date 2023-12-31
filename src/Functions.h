@@ -6,6 +6,7 @@
 #include "EncoderReader.h"
 #include <MFRC522.h>
 #include "rfid_functions.h"
+#include "Pins.h"
 
 // Declare as funções
 void wifisetup();
