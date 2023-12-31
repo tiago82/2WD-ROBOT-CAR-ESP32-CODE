@@ -10,15 +10,16 @@
 #include <BluetoothSerial.h>
 
 // Declare as funções
-void wifisetup();
-void wifiloop();
-void motordriver();
-void cardsetup();
-void cardloop();
+void wifiSetup();
+void wifiLoop();
+void testMotor(int speed); // testa motores com velocidades iguais da roda
+void testMotor(int speed1, int speed2); // testa motor com velocidades diferentes
+void cardSetup();
+void cardLoop();
 void myFunction1();
 void myFunction2();
-void btsetup(String BTName); // Escolha o nome do Bluetooth
-void btloop();
+void btSetup(String BTName); // Escolha o nome do Bluetooth
+void btLoop();
 
 
 #endif 

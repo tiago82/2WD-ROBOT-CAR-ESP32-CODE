@@ -11,6 +11,14 @@
     #endif
 #endif
 
+//#define RFID_SDA 5
+#define RFID_SCK 18
+#define RFID_MOSI 23
+#define RFID_MISO 19
+//#define RFID_RST 22
+
+ 
+
 
 MotorDriver motor(EN1, IN2, IN1, EN2, IN3, IN4);// EN1 IN1, IN2, EN2, IN3, IN4) (LEFT, RIGHT)
 EncoderReader encoderM1(M1_S1);
@@ -24,53 +32,59 @@ void myFunction2();
 //==================================
 
 
-void wifisetup(){
+void wifiSetup(){
 
 
 }
 
-void wifiloop(){
+void wifiLoop(){
 
 
 
 }
 
-void motordriver(){
-
-
+void testMotor(int speed){
+  motor.setSpeed(speed, speed);
 }
 
-void cardsetup(){
-    // Inicializa o MFRC522 
-  mfrc522.PCD_Init();
+void testMotor(int speed1,int speed2){
+  motor.setSpeed(speed1, speed2);
+}
+void cardSetup(){
+
+
+  SPI.begin(RFID_SCK, RFID_MISO, RFID_MOSI); // para poder funcionar a HSPI
+    
+  mfrc522.PCD_Init(); // Inicializa o MFRC522 
 
   // Adicione funções para cartões específicos
-  RFID::addCardFunction(mfrc522, 0x13494a10, myFunction1);
-  RFID::addCardFunction(mfrc522, 0x03246010, myFunction2);
+  RFID::addCardFunction(mfrc522, 0x10602403, myFunction1);
+  RFID::addCardFunction(mfrc522, 0x104A4913, myFunction2);
 }
 
-void cardloop(){
+void cardLoop(){
 // Verifique a presença de um cartão RFID
   RFID::checkRFIDPresent(mfrc522);
 }
 
 void myFunction1(){
 // Implemente a lógica desejada para este cartão
+Serial.print("funcao 1");
 
 }
 void myFunction2(){
 // Implemente a lógica desejada para este cartão
-
+Serial.print("funcao 2");
 }
 
 
-void btsetup(String BTName){
+void btSetup(String BTName){
   
   SerialBT.begin(BTName); // Nome do dispositivo Bluetooth
   Serial.println("Espere a conexão Bluetooth...");
 }
 
-void btloop(){
+void btLoop(){
 
    if (SerialBT.available()) {
     char incomingByte = SerialBT.read();
@@ -80,3 +94,5 @@ void btloop(){
   
   delay(500);
 }
+
+
