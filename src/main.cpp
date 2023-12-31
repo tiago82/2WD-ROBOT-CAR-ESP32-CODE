@@ -7,7 +7,6 @@ Serial.begin(115200);
 //testMotor(50);
 cardSetup();
 ledSetup();
-
 }
 
 void loop() {
