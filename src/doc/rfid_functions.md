@@ -49,11 +49,11 @@ void setup() {
   mfrc522.PCD_Init();
 
   // Adicione funções para cartões específicos
-  RFID::addCardFunction(mfrc522, /*id do cartão*/, myFunction);
+  RFID::addCardFunction(mfrc522, /*id do cartão(Ex: 0x13494a10)*/, myFunction);
 }
 
 void loop() {
-  // Verifique a presença de um cartão RFID
+  // Verifica a presença de um cartão RFID
   RFID::checkRFIDPresent(mfrc522);
 
   // Outras operações do loop

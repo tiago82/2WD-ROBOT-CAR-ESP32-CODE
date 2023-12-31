@@ -2,8 +2,8 @@
 
 #ifndef RFID_FUNCTIONS_H
 #define RFID_FUNCTIONS_H
-
 #include <MFRC522.h>
+
 
 namespace RFID {
   typedef void (*FunctionPtr)();

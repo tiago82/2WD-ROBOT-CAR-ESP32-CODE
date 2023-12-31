@@ -2,6 +2,7 @@
 
 #include "rfid_functions.h"
 #include <Arduino.h>
+#include <MFRC522.h>
 
 namespace RFID {
   // Array dinâmico para armazenar as associações de cartões e funções
