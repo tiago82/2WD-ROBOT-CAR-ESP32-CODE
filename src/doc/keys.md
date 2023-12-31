@@ -1,6 +1,6 @@
-# Arquivo de Configuração (config.h)
+# Arquivo de Configuração (key.h)
 
-O arquivo `config.h` contém informações sensíveis, como as credenciais de rede Wi-Fi (SSID e senha), que são utilizadas no código-fonte do projeto.
+O arquivo `key.h` contém informações sensíveis, como as credenciais de rede Wi-Fi (SSID e senha), que são utilizadas no código-fonte do projeto.
 
 ## Conteúdo
 
@@ -12,7 +12,7 @@ O arquivo `config.h` contém informações sensíveis, como as credenciais de re
 
 ## Exemplo de Uso
 
-O arquivo `config.h` é utilizado para armazenar informações de rede, como no exemplo abaixo:
+O arquivo `key.h` é utilizado para armazenar informações de rede, como no exemplo abaixo:
 
 ```cpp
 #ifndef KEYS_H
