@@ -38,7 +38,10 @@ Para utilizar estas funções, é necessário incluir a biblioteca MFRC522 e cha
 #include <MFRC522.h>
 #include "rfid_functions.h"
 
-MFRC522 mfrc522(/*configurações do pino*/);
+#define RST_PIN 9   // Define o pino RST do MFRC522
+#define SS_PIN 10   // Define o pino SDA do MFRC522
+
+MFRC522 mfrc522(SS_PIN, RST_PIN);/*configurações do pino*/ // Cria o objeto MFRC522
 
 void myFunction() {
   // Implemente a lógica desejada para este cartão

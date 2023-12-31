@@ -27,13 +27,14 @@ EncoderReader encoderM1(M1_S1);
 void setup() {
 Serial.begin(115200);
 
-  
+  void cardsetup();
 }
 
 
 
 void loop() {
-   
+   void cardloop();
+
 
  
 }
