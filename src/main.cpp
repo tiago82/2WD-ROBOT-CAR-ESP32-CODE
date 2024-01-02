@@ -4,7 +4,7 @@
 #include "SingleEncoder.h"
 #include "Pins.h"
 
-#include "rfid_functions_V2.h"
+#include "rfid_functions.h"
 
 MFRC522 mfrc522(SS_RFID_PIN, RST_RFID_PIN);
 
