@@ -4,18 +4,20 @@
 #include <Arduino.h>
 
 //Motor
-#define EN1 21
-#define IN1 32
-#define IN2 33
-#define EN2 22
-#define IN3 25
-#define IN4 26
+#define EN1 22 // Motor1 Esquerdo
+#define IN1 25
+#define IN2 26
+
+#define EN2 21 // Motor2 Direito
+#define IN3 32
+#define IN4 33
 
 //Encoder
-#define M1_S1 16
-#define M1_S2 17
-#define M2_S1 3 // RX0
-#define M2_S2 1 // TX0
+#define M1_S1 3 // RX0 - M1 Motor Esquerdo
+#define M1_S2 1 // TX0
+
+#define M2_S1 16 // - M2 Motor Direito
+#define M2_S2 17
 
 //RFID (HSPI)
 #define SS_RFID_PIN 5   // Define o pino SDA do MFRC522

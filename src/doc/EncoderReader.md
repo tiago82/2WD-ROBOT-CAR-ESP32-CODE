@@ -1,83 +1,43 @@
-# EncoderReader
+# Biblioteca Encoder
 
-Este arquivo define a classe `EncoderReader` para leitura de um encoder utilizando um Arduino.
+Esta biblioteca oferece funcionalidades para lidar com um encoder usando interrupções em placas Arduino.
 
-## Classe `EncoderReader`
+## Métodos e Funções
 
-A classe `EncoderReader` oferece métodos para ler pulsos de um encoder e calcular a frequência de pulsos por segundo.
+### `void startEncoder(int pinEncoder)`
 
-### Construtor
+- Inicia o encoder associado ao pino especificado para contar pulsos.
 
-#### `EncoderReader(int encoderPin)`
+#### Parâmetros
 
-- **Descrição**: Construtor da classe `EncoderReader`.
-- **Parâmetros**:
-  - `encoderPin`: Pino do Arduino conectado ao encoder.
+- `pinEncoder`: O número do pino ao qual o encoder está conectado.
 
-### Métodos
+### `void updateEncoder()`
 
-#### `void begin()`
+- Atualiza e imprime a contagem de pulsos por segundo do encoder.
 
-- **Descrição**: Inicializa o encoder para leitura.
+### `int getpulse()`
 
-#### `void update()`
+- Retorna o número atual de pulsos acumulados pelo encoder.
 
-- **Descrição**: Atualiza o contador de pulsos do encoder.
-
-#### `float getPulsesPerSecond()`
-
-- **Descrição**: Retorna a frequência de pulsos por segundo do encoder.
-
-### Variáveis
-
-#### `int encoderPin`
-
-- **Descrição**: Pino do Arduino conectado ao encoder.
-
-#### `volatile int pulseCount`
-
-- **Descrição**: Contador de pulsos do encoder.
-
-#### `unsigned long prevMillis`
-
-- **Descrição**: Armazena o tempo da última atualização do contador de pulsos.
-
-#### `float pulsesPerSecond`
-
-- **Descrição**: Frequência de pulsos por segundo do encoder.
-
-#### `static EncoderReader* instance`
-
-- **Descrição**: Referência para a instância do objeto da classe `EncoderReader`.
-
-### Funções
-
-#### `static void handleInterrupt()`
-
-- **Descrição**: Função estática utilizada como interrupção para atualizar o contador de pulsos do encoder.
-
-## Exemplo de Uso
+## Exemplo em .ino
 
 ```cpp
-#include <Arduino.h>
-#include "EncoderReader.h"
+#include "Encoder.h"
 
-int encoderPin = /* Pino do encoder */;
-
-EncoderReader encoder(encoderPin);
+#define encoderPin 2 // Defina o pino do encoder
 
 void setup() {
   Serial.begin(9600);
-  
-  encoder.begin();
+  startEncoder(encoderPin);
 }
 
 void loop() {
-  encoder.update();
+  updateEncoder();
 
-  float pulsesPerSecond = encoder.getPulsesPerSecond();
-  Serial.print("Pulsos por segundo: ");
-  Serial.println(pulsesPerSecond);
+  int pulses = getpulse();
+  Serial.print("Pulsos acumulados: ");
+  Serial.println(pulses);
 
-  delay(1000); // Aguarda 1 segundo
+  // Outras operações...
 }

@@ -3,9 +3,9 @@
 
 #include <Arduino.h>
 #include "MotorDriver.h"
-#include "EncoderReader.h"
+#include "SingleEncoder.h"
 #include <MFRC522.h>
-#include "rfid_functions.h"
+#include "rfid_functions_V2.h"
 #include "Pins.h"
 #include <BluetoothSerial.h>
 #include "Led.h"

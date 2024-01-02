@@ -24,9 +24,9 @@
 
 
 MotorDriver motor(EN1, IN2, IN1, EN2, IN3, IN4);// EN1 IN1, IN2, EN2, IN3, IN4) (LEFT, RIGHT)
-EncoderReader encoderM1(M1_S1);
+//Encoder encoderM1(M1_S1);
 //EncoderReader encoderM2(M2_S1);
-MFRC522 mfrc522(SS_RFID_PIN, RST_RFID_PIN);
+//MFRC522 mfrc522(SS_RFID_PIN, RST_RFID_PIN);
 BluetoothSerial SerialBT;
 
 //==============Protótipos==========
@@ -66,16 +66,16 @@ void cardSetup(){
 
   SPI.begin(RFID_SCK, RFID_MISO, RFID_MOSI); // para poder funcionar a HSPI
     
-  mfrc522.PCD_Init(); // Inicializa o MFRC522 
+  //mfrc522.PCD_Init(); // Inicializa o MFRC522 
 
   // Adicione funções para cartões específicos
-  RFID::addCardFunction(mfrc522, 0x10602403, myFunction1);
-  RFID::addCardFunction(mfrc522, 0x104A4913, myFunction2);
+  //RFID::addCardFunction(mfrc522, 0x10602403, myFunction1);
+ // RFID::addCardFunction(mfrc522, 0x104A4913, myFunction2);
 }
 
 void cardLoop(){
 // Verifique a presença de um cartão RFID
-  RFID::checkRFIDPresent(mfrc522);
+ // RFID::checkRFIDPresent(mfrc522);
 }
 
 void myFunction1(){
@@ -108,15 +108,83 @@ void btLoop(){
 }
 //===========================Test PIB MOTOR=========================================
 
-void pidSetup() {
 
 
-}
+// volatile int pulseCount = 0;
+// volatile unsigned long lastUpdateTime = 0;
 
-void pidLoop() {
+// double setpoint = 70; // Velocidade desejada em pulsos por segundo
+// double input, output;
+// double Kp = 2.0, Ki = 5.0, Kd = 1.0;
+
+// PID myPID(&input, &output, &setpoint, Kp, Ki, Kd, DIRECT);
+
+// void ICACHE_RAM_ATTR funcaoInterrupcao() {
+//   pulseCount++;
+// }
 
 
-}
+// void pidSetup() {
+
+//     SerialBT.begin("ESP32_BT"); // Nome do dispositivo Bluetooth
+  
+//   attachInterrupt(digitalPinToInterrupt(M1_S1), funcaoInterrupcao, RISING);
+
+
+//   myPID.SetMode(AUTOMATIC);
+
+
+// }
+
+// void pidLoop() {
+
+//     if (SerialBT.available()) {
+//     String inputString = SerialBT.readStringUntil(',');
+
+//     if (inputString.startsWith("kp")) {
+//       inputString.remove(0, 2);
+//       Kp = inputString.toDouble();
+//       myPID.SetTunings(Kp, Ki, Kd);
+//       SerialBT.println("Novo valor de Kp: " + String(Kp));
+//     } else if (inputString.startsWith("ki")) {
+//       inputString.remove(0, 2);
+//       Ki = inputString.toDouble();
+//       myPID.SetTunings(Kp, Ki, Kd);
+//       SerialBT.println("Novo valor de Ki: " + String(Ki));
+//     } else if (inputString.startsWith("kd")) {
+//       inputString.remove(0, 2);
+//       Kd = inputString.toDouble();
+//       myPID.SetTunings(Kp, Ki, Kd);
+//       SerialBT.println("Novo valor de Kd: " + String(Kd));
+//     }
+//   }
+
+//   unsigned long currentTime = millis();
+//   if (currentTime - lastUpdateTime >= 1000) {
+//     double speed = pulseCount / (double)(currentTime - lastUpdateTime) * 1000;
+
+//     SerialBT.print("Velocidade: ");
+//     SerialBT.print(speed);
+//     SerialBT.println(" pulsos por segundo");
+
+//     // Defina o setpoint com base na velocidade desejada (ajuste conforme necessário)
+//     setpoint = 100.0;
+
+//     // Calcula a saída do PID para ajustar a velocidade
+//     input = speed;
+//     myPID.Compute();
+    
+//     // Use a saída do PID para ajustar a velocidade dos motores (ajuste conforme necessário)
+//     //analogWrite(EN1, output);
+//      motor.moveForward(output);
+
+//     pulseCount = 0;
+//     lastUpdateTime = currentTime;
+//   }
+
+
+
+// }
 
 
 

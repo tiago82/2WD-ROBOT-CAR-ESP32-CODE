@@ -41,7 +41,7 @@ Para utilizar estas funções, é necessário incluir a biblioteca MFRC522 e cha
 #define RST_PIN 9   // Define o pino RST do MFRC522
 #define SS_PIN 10   // Define o pino SDA do MFRC522
 
-MFRC522 mfrc522(;/*configurações do pino*/ // Cria o objeto MFRC522
+MFRC522 mfrc522(SS_PIN, RST_PIN);/*configurações do pino*/ // Cria o objeto MFRC522
 
 void myFunction() {
   // Implemente a lógica desejada para este cartão
@@ -49,9 +49,12 @@ void myFunction() {
 
 void setup() {
   // Inicialize o MFRC522 e outros componentes
-  mfrc522.PCD_Init();
 
-  // Adicione funções para cartões específicos
+  SPI.begin(); // Inicializa a biblioteca SPI para comunicação com o módulo RFID
+  mfrc522.PCD_Init(); // Inicializa o módulo RFID
+  
+
+  // Adicione funções para cartões específicos 
   RFID::addCardFunction(mfrc522, /*id do cartão(Ex: 0x13494a10)*/, myFunction);
 }
 
