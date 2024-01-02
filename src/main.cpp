@@ -23,16 +23,13 @@ void doido3(){
 }
 
 void setup() {
-Serial.begin(115200);
-
-  SPI.begin(); // Inicializa a biblioteca SPI para comunicação com o módulo RFID
-  mfrc522.PCD_Init(); // Inicializa o módulo RF
+    Serial.begin(115200);
+    SPI.begin(); // Inicializa a biblioteca SPI para comunicação com o módulo RFID
+    mfrc522.PCD_Init(); // Inicializa o módulo RF
 
 //setupTestPID();
-
- RFID::addCardTwoFunctions(0x104A4913,  doido1,  doido2);
- RFID::addCardFunction(0x10602403, doido3);
-
+    RFID::addCardTwoFunctions(0x104A4913,  doido1,  doido2);
+    RFID::addCardFunction(0x10602403, doido3);
 
 }
 
