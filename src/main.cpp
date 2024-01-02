@@ -3,7 +3,6 @@
 #include "PID/motorPID.h"
 #include "SingleEncoder.h"
 #include "Pins.h"
-
 #include "rfid_functions.h"
 
 MFRC522 mfrc522(SS_RFID_PIN, RST_RFID_PIN);
@@ -31,8 +30,8 @@ Serial.begin(115200);
 
 //setupTestPID();
 
- RFID::addCardTwoFunctions(mfrc522, 0x104A4913,  doido1,  doido2);
- RFID::addCardFunction(mfrc522, 0x10602403, doido3);
+ RFID::addCardTwoFunctions(0x104A4913,  doido1,  doido2);
+ RFID::addCardFunction(0x10602403, doido3);
 
 
 }
@@ -40,7 +39,7 @@ Serial.begin(115200);
 void loop() {
 //loopTestPID();
 
-RFID::checkRFIDPresent2(mfrc522);
+RFID::checkRFIDPresent(mfrc522);
 
 }
 
