@@ -8,17 +8,14 @@
 MFRC522 mfrc522(SS_RFID_PIN, RST_RFID_PIN);
 
 void doido1(){
-
     Serial.println("like1");
 }
 
 void doido2(){
-
     Serial.println("like2");
 }
 
 void doido3(){
-
     Serial.println("like3");
 }
 
@@ -34,8 +31,7 @@ void setup() {
 }
 
 void loop() {
-//loopTestPID();
-
+    //loopTestPID();
     RFID::checkRFIDPresent(mfrc522);
 
 }
