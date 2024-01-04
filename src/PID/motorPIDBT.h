@@ -6,14 +6,16 @@
 #include <PID_v1.h>
 #include "SingleEncoder.h"
 #include "rfid_functions.h"
+#include <BluetoothSerial.h>
+
 
 #include <string.h>
 
 
 byte ATuneModeRemember=2;
-double input=80, output=50, setpoint=100;
-double kp=2,ki=0.5,kd=2;
-
+double input=80, output=50, setpoint=150;
+//double kp=0.2,ki=0.2,kd=0.005;
+double kp=0.5,ki=0.8,kd=0;
 // double kpmodel=1.5, taup=100, theta[50];
 // double outputStart=5;
 // double aTuneStep=50, aTuneNoise=1, aTuneStartValue=100;
@@ -24,13 +26,15 @@ double kp=2,ki=0.5,kd=2;
 
 PID myPID(&input, &output, &setpoint,kp,ki,kd, DIRECT);
 
+BluetoothSerial SerialBT;
+
 void PIDfunction();
-void ajustarPID();
-void SerialSend();
+void ajustarPIDBT();
+void SerialSendBT();
 
 
 
-void setupPID() {
+void setupPIDBT() {
 
     pinMode(EN2, OUTPUT); // Motor2 Direito
     pinMode(IN3, OUTPUT);
@@ -43,7 +47,8 @@ void setupPID() {
 
     myPID.SetMode(AUTOMATIC);
 
-
+    SerialBT.begin("es3p");
+    myPID.SetOutputLimits(0, 150);
 
 }
 
@@ -51,59 +56,62 @@ void setupPID() {
 void loopPID() {
 
 updateEncoder(PIDfunction); // Cada segundo que a funcao encoder calcula o executa a funcao 
-analogWrite(EN2, output);
 
-ajustarPID();
+
+ajustarPIDBT();
 
 
 }
 
 void PIDfunction(){
-
+input = getpulse();
 myPID.Compute();
+analogWrite(EN2, output);
+SerialSendBT();
 
 }
 
 
-void SerialSend()
+void SerialSendBT()
 {
-  Serial.print("setpoint: ");Serial.print(setpoint); Serial.print(" ");
-  Serial.print("input: ");Serial.print(input); Serial.print(" ");
-  Serial.print("output: ");Serial.print(output); Serial.print(" ");
+  SerialBT.print("setpoint: ");SerialBT.print(setpoint); SerialBT.print(" ");
+  SerialBT.print("input: ");SerialBT.print(input); SerialBT.print(" ");
+  SerialBT.print("output: ");SerialBT.print(output); SerialBT.println(" ");
 }
 
 
-void ajustarPID() {
+void ajustarPIDBT() {
 
-  if (Serial.available() > 0) {
-    String input = Serial.readStringUntil('\n');
+  if (SerialBT.available()) {
+
+    String input = SerialBT.readStringUntil('\n');
 
     // Verifica se a entrada começa com "kp"
     if (input.startsWith("kp")) {
       String valueStr = input.substring(2);  // Pega os caracteres depois de "kp"
       kp = valueStr.toFloat();               // Converte para float
-      Serial.print("Novo valor de kp: ");
-      Serial.println(kp);
+      SerialBT.print("Novo valor de kp: ");
+      SerialBT.println(kp);
     }
     // Verifica se a entrada começa com "ki"
     else if (input.startsWith("ki")) {
       String valueStr = input.substring(2);  // Pega os caracteres depois de "ki"
       ki = valueStr.toFloat();               // Converte para float
-      Serial.print("Novo valor de ki: ");
-      Serial.println(ki);
+      SerialBT.print("Novo valor de ki: ");
+      SerialBT.println(ki);
     }
     // Verifica se a entrada começa com "kd"
     else if (input.startsWith("kd")) {
       String valueStr = input.substring(2);  // Pega os caracteres depois de "kd"
       kd = valueStr.toFloat();               // Converte para float
-      Serial.print("Novo valor de kd: ");
-      Serial.println(kd);
+      SerialBT.print("Novo valor de kd: ");
+      SerialBT.println(kd);
     }
     else if (input.startsWith("se")) {
       String valueStr = input.substring(2);  // Pega os caracteres depois de "kd"
       setpoint = valueStr.toFloat();               // Converte para float
-      Serial.print("Novo valor de kd: ");
-      Serial.println(kd);
+      Serial.print("Novo valor de setpoint: ");
+      Serial.println(setpoint);
     }
     // Processa valores de kp, ki e kd separados por espaços
     else {
@@ -130,12 +138,12 @@ void ajustarPID() {
       if (token != NULL) {
         kd = atof(token);
       }
-      Serial.print("kp: ");
-      Serial.print(kp);
-      Serial.print(" ki: ");
-      Serial.print(ki);
-      Serial.print(" kd: ");
-      Serial.println(kd);
+      SerialBT.print("kp: ");
+      SerialBT.print(kp);
+      SerialBT.print(" ki: ");
+      SerialBT.print(ki);
+      SerialBT.print(" kd: ");
+      SerialBT.println(kd);
 
       myPID.SetTunings(kp, ki, kd);
     }

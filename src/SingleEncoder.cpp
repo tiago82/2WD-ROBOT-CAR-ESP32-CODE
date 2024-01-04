@@ -1,6 +1,6 @@
 #include "SingleEncoder.h"
 
-
+int timeCountEncoder = 250;
 
 volatile int pulseCountEncoder = 0;
 volatile unsigned long lastUpdateTime = 0;
@@ -16,7 +16,7 @@ void startEncoder(int pinEncoder) {
 
 void updateEncoder() {
   unsigned long currentTime = millis();
-  if (currentTime - lastUpdateTime >= 1000) {
+  if (currentTime - lastUpdateTime >= timeCountEncoder) {
     //Serial.print("Pulsos por segundo: ");
     //Serial.println(pulseCountEncoder);
     pulseCountEncoder = 0;
@@ -26,15 +26,16 @@ void updateEncoder() {
 
 void updateEncoder(FuncPtr func) {
   unsigned long currentTime = millis();
-  if (currentTime - lastUpdateTime >= 1000) {
+  if (currentTime - lastUpdateTime >= timeCountEncoder) {
     func(); // Chama a função passada como argumento
+    pulseCountEncoder = 0;
     lastUpdateTime = currentTime;
   }
 }
 
 void updateEncoderPrint() {
   unsigned long currentTime = millis();
-  if (currentTime - lastUpdateTime >= 1000) {
+  if (currentTime - lastUpdateTime >= timeCountEncoder) {
     Serial.print("Pulsos por segundo: ");
     Serial.println(pulseCountEncoder);
     pulseCountEncoder = 0;
