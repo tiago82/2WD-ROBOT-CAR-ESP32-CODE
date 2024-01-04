@@ -1,37 +1,45 @@
 #include <Arduino.h>
 //#include "Functions.h"
-#include "PID/motorPID.h"
+
 #include "SingleEncoder.h"
 #include "Pins.h"
 #include "rfid_functions.h"
 
+
+
+//#include "PID/motorPID.h"
+#include "PID/automotorPID.h"
+
 MFRC522 mfrc522(SS_RFID_PIN, RST_RFID_PIN);
 
-void doido1(){
-    Serial.println("like1");
+void myFunction(){
+    setupTestautoPID();
+    while (true){
+        loopTestautoPID();
+    }
 }
 
-void doido2(){
-    Serial.println("like2");
-}
-
-void doido3(){
-    Serial.println("like3");
-}
 
 void setup() {
     Serial.begin(115200);
+
     SPI.begin(); // Inicializa a biblioteca SPI para comunicação com o módulo RFID
-    mfrc522.PCD_Init(); // Inicializa o módulo RF
+    mfrc522.PCD_Init(); // Inicializa o módulo RFID
+    RFID::addCardFunction( 0x104a4913, myFunction);
 
-//setupTestPID();
-    RFID::addCardTwoFunctions(0x104A4913,  doido1,  doido2);
-    RFID::addCardFunction(0x10602403, doido3);
 
+    //setupPID();
+
+    //setupTestautoPID();
+
+ 
 }
 
 void loop() {
-    //loopTestPID();
+
+    //loopPID();
+
+    loopTestautoPID();
     RFID::checkRFIDPresent(mfrc522);
 
 }
