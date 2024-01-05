@@ -1,3 +1,4 @@
+#pragma once
 #ifndef Encoder_h
 #define Encoder_h
 
