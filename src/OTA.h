@@ -11,6 +11,7 @@ IPAddress manualGateway(192, 168, 5, 1); // Gateway desejado
 IPAddress manualSubnet(255, 255, 255, 0); // 
 
 void setupOTA() {
+    WiFi.disconnect();
     Serial.begin(115200);
     Serial.println("Booting");
     WiFi.config(manualIP, manualGateway, manualSubnet);
@@ -70,4 +71,9 @@ void setupOTA() {
 
 void loopOTA() {
   ArduinoOTA.handle();
+}
+
+void endOTA(){
+  ArduinoOTA.end();
+  WiFi.disconnect();
 }

@@ -56,6 +56,10 @@ class EspNowSerial {
       message.toCharArray(dataSend.message, sizeof(dataSend.message));
       esp_now_send(targetMAC, (uint8_t *)&dataSend, sizeof(DataStruct));
     }
+
+    void disableESPNow() {
+      esp_now_deinit(); // Desativa o ESP-NOW
+    }
 };
 
 #endif

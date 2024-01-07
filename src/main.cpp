@@ -1,7 +1,6 @@
 #include <Arduino.h>
 //#include "Functions.h"
 
-//#include "SingleEncoder.h"
 #include "MultiEncoder.h"
 #include "Pins.h"
 #include "rfid_functions.h"
@@ -19,6 +18,10 @@ bool verdade = true;
 //#include "PID/automotorPID.h"
 
 //#include "PID/motorPIDBT.h"
+//#include "EspNowSerial.h"
+
+// uint8_t macAddress2Esp32[] = { 0x48, 0xE7, 0x29, 0x9F, 0xEC, 0x20 }; // Replace with the target ESP32's MAC
+// EspNowSerial espNowSerial(macAddress2Esp32);
 
 MFRC522 mfrc522(SS_RFID_PIN, RST_RFID_PIN);
 MotorDriver motor(EN1, IN2, IN1, EN2, IN3, IN4);
@@ -48,10 +51,10 @@ void myFunction2(){
 }
 
 void OTAupdate(){
-
-ledSetup();
-acenderLed();
-        setupOTA();
+    //espNowSerial.disableESPNow();
+    ledSetup();
+    acenderLed();
+    setupOTA();
         while (true)
         {
            loopOTA();
@@ -61,6 +64,9 @@ acenderLed();
 
 void setup() {
     Serial.begin(115200);
+
+    //espNowSerial.initESPNow(); // Initialize ESP-NOW communication
+
     analogWriteResolution(10);
     SPI.begin(); // Inicializa a biblioteca SPI para comunicação com o módulo RFID
     mfrc522.PCD_Init(); // Inicializa o módulo RFID
