@@ -13,11 +13,12 @@
 #define IN4 33
 
 //Encoder
-#define M1_S1 3 // RX0 - M1 Motor Esquerdo
-#define M1_S2 1 // TX0
+#define M1_S1 1 // TX0 - M1 Motor Esquerdo
+#define M1_S2 3 // RX0 
 
-#define M2_S1 16 // - M2 Motor Direito
-#define M2_S2 17
+#define M2_S1 17 // TX2 - M2 Motor Direito
+#define M2_S2 16 // RX2
+
 
 //RFID (HSPI)
 #define SS_RFID_PIN 5   // Define o pino SDA do MFRC522
