@@ -27,9 +27,8 @@ void myFunction3() {
     //motor.moveForward(move ? 0 : 300);  // Operador ternário (? :) Se move for verdadeiro, escolhemos 0 (parar o motor). Se move for falso, escolhemos 300.
    // move = !move;
 
-motor.setSpeed(move ? dualpid.getOutput1() : 0, move ? dualpid.getOutput2() : 0); //Operador ternário (? :)
-move = !move;
-    
+    dualpid.init();
+    move = true;
 }
 
 void myFunction2(){
@@ -76,7 +75,7 @@ void setup() {
     //setupwebserial();
     espNowSerial.initESPNow();
     
-    dualpid.setup();
+
 
 
 }
@@ -93,7 +92,12 @@ void loop() {
     //     loopPID();
     // }
 
+    if(move){
+
     updateEncoder(printEspNow);
+
+    }
+    
 
     
 
