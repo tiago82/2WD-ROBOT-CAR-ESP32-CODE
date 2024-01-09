@@ -13,7 +13,7 @@ int getpulse1(); // Retorna o número atual de pulsos por segundo .
 int getpulse2(); // Retorna o número atual de pulsos por segundo .
 
 
-int timeCountEncoder = 250;
+int timeCountEncoder = 1000;
 
 volatile int pulseCountEncoder1 = 0;
 volatile int pulseCountEncoder2 = 0;
@@ -53,6 +53,7 @@ void updateEncoder(FuncPtr func) {
     lastUpdateTime = currentTime;
   }
 }
+
 
 void updateEncoderPrint() {
   unsigned long currentTime = millis();
