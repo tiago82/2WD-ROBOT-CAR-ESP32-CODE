@@ -22,6 +22,11 @@ void ICACHE_RAM_ATTR funcaoInterrupcao2() {
   pulseCountEncoder2++;
 }
 
+void startEncoder(int pinEncoder1) {
+  pinMode(pinEncoder1, INPUT_PULLDOWN);
+  attachInterrupt(digitalPinToInterrupt(pinEncoder1), funcaoInterrupcao1, RISING);
+}
+
 void startEncoder(int pinEncoder1, int pinEncoder2) {
   pinMode(pinEncoder1, INPUT_PULLDOWN);
   pinMode(pinEncoder2, INPUT_PULLDOWN);
