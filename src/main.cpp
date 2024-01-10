@@ -41,9 +41,8 @@ void printEspNow(){
 
     //espNowSerial.sendData(String(getpulse1())+","+String(getpulse2())); // Plot
     
-    
 
-    espNowSerial.print(dualpid.getOutput1()+","+dualpid.getInput1()); // Convert the integer to a string before sending
+    espNowSerial.print(String(dualpid.getOutput1())+","+String(dualpid.getInput1())); // Convert the integer to a string before sending
 }
 
 void setup() {
