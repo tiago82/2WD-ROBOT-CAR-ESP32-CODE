@@ -1,23 +1,19 @@
 #pragma once
 #include <Arduino.h>
 
-
+int timeCountEncoder = 100; // faixa em milisegundos de contagem dos pulsos.
+volatile int pulseCountEncoder1 = 0;
+volatile int pulseCountEncoder2 = 0;
+volatile unsigned long lastUpdateTime = 0;
 typedef void (*FuncPtr)(); // Define um tipo de ponteiro para função
 
 void startEncoder(int pinEncoder1, int pinEncoder2);
-
 void updateEncoder(); // Atualiza a contagem de pulsos 
 void updateEncoder(FuncPtr func); // Atualiza a contagem de pulsos e executa uma função passada como parâmetro, Importante para chamar funcao que calcula PID.
 void updateEncoderPrint(); // Atualiza a contagem de pulsos e imprime o valor por serial.
 int getpulse1(); // Retorna o número atual de pulsos por segundo .
 int getpulse2(); // Retorna o número atual de pulsos por segundo .
 
-
-int timeCountEncoder = 100;
-
-volatile int pulseCountEncoder1 = 0;
-volatile int pulseCountEncoder2 = 0;
-volatile unsigned long lastUpdateTime = 0;
 
 void ICACHE_RAM_ATTR funcaoInterrupcao1() {
   pulseCountEncoder1++;
@@ -53,7 +49,6 @@ void updateEncoder(FuncPtr func) {
     lastUpdateTime = currentTime;
   }
 }
-
 
 void updateEncoderPrint() {
   unsigned long currentTime = millis();

@@ -26,6 +26,7 @@ class EspNowSerial : public Print { // A classe EspNowSerial herda da classe Pri
       memcpy(&dataRecv, incomingData, sizeof(dataRecv));
       //Serial.println("Mensagem Recebida via ESP-NOW: " + String(dataRecv.message));
       Serial.println(String(dataRecv.message));
+      
     }
 
   public:
