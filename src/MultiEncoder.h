@@ -13,7 +13,7 @@ int getpulse1(); // Retorna o número atual de pulsos por segundo .
 int getpulse2(); // Retorna o número atual de pulsos por segundo .
 
 
-int timeCountEncoder = 1000;
+int timeCountEncoder = 100;
 
 volatile int pulseCountEncoder1 = 0;
 volatile int pulseCountEncoder2 = 0;

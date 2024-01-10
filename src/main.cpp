@@ -39,10 +39,10 @@ void printEspNow(){
     dualpid.updatePID(getpulse1(), getpulse2());
     motor.setSpeed(dualpid.getOutput1(), dualpid.getOutput2());
 
-    //espNowSerial.sendData(String(getpulse1())+","+String(getpulse2())); // Plot
+    espNowSerial.sendData(String(getpulse1())+","+String(getpulse2())); // Plot
     
 
-    espNowSerial.print(String(dualpid.getOutput1())+","+String(dualpid.getInput1())); // Convert the integer to a string before sending
+   // espNowSerial.print(String(dualpid.getOutput1())+","+String(dualpid.getInput1())); // Convert the integer to a string before sending
 }
 
 void setup() {
@@ -50,7 +50,7 @@ void setup() {
     espNowSerial.initESPNow();
 
     analogWriteResolution(10);
-    startEncoder(M1_S1, M2_S1);
+    startEncoder(M1_S2, M2_S1);
 
     SPI.begin(); // Inicializa a biblioteca SPI para comunicação com o módulo RFID
     mfrc522.PCD_Init(); // Inicializa o módulo RFID

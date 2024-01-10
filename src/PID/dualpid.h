@@ -8,10 +8,10 @@
 
 class dualPID{
     private:
-        double input1, output1, setpoint=1500;
+        double input1, output1, setpoint=100;
         double input2, output2;
-        double kp1=0.2,ki1=0.5,kd1=0;
-        double kp2=0.2,ki2=0.5,kd2=0;
+        double kp1=0,ki1=5,kd1=0;
+        double kp2=0,ki2=5,kd2=0;
         PID myPID1;
         PID myPID2;
 
@@ -37,11 +37,11 @@ class dualPID{
 };
 
     void dualPID::init(){
-        
+        myPID1.SetOutputLimits(100, 500); // PWM 10bits vai de 0 a 1023
+        myPID2.SetOutputLimits(100, 500);
         myPID1.SetMode(AUTOMATIC);
         myPID2.SetMode(AUTOMATIC);
-        myPID1.SetOutputLimits(0, 500); // PWM 10bits vai de 0 a 1023
-        myPID2.SetOutputLimits(0, 500);
+
     }
     void dualPID::deinit(){
         
