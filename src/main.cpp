@@ -6,12 +6,15 @@
 #include "EspNowSerial.h"
 //#include "Led.h"
 #include "MotorDriver.h"
+#include "SerialSetPID.h"
 
 bool move = false;
 
 uint8_t macAddress2Esp32[] = { 0xA8, 0x42, 0xE3, 0xCB, 0x82, 0xEC }; // Replace with the target ESP32's MAC
 EspNowSerial espNowSerial(macAddress2Esp32);
 dualPID dualpid;
+SerialSetPID setpid;
+String myString = EspNowSerial::Serialcommand;
 
 MFRC522 mfrc522(SS_RFID_PIN, RST_RFID_PIN);
 MotorDriver motor(EN1, IN2, IN1, EN2, IN3, IN4);
@@ -32,6 +35,12 @@ void printEspNow(){
     espNowSerial.sendData(String(getpulse1())+","+String(getpulse2())); // Plot
 
    // espNowSerial.print(String(dualpid.getOutput1())+","+String(dualpid.getInput1())); // Convert the integer to a string before sending
+
+   setpid.ajustarPIDBT(myString);
+
+    double kp, ki, kd;
+    std::tie(kp, ki, kd) = setpid.getconstants();
+   
 }
 
 void setup() {
@@ -56,3 +65,6 @@ void loop() {
     if(move){updateEncoder(printEspNow);}    
 
 }
+
+
+

@@ -49,21 +49,64 @@ class dualPID{
         myPID2.Compute();
     }
 
+    /**
+     * Define o valor de referência para o controle PID.
+     *
+     * @param Setpoint O valor de referência desejado.
+     */
     void dualPID::setSetpoint(double Setpoint){
         setpoint = Setpoint;
     }
+    /**
+     * @brief Obtém o valor do primeiro input.
+     * 
+     * Este método retorna o valor atual do primeiro input do controlador PID.
+     * 
+     * @return Retorna um inteiro representando o valor do primeiro input.
+     */
     int dualPID::getInput1(){
         return input1;
     }
+    /**
+     * @brief Obtém o valor do segundo input.
+     * 
+     * Este método retorna o valor atual do segundo input do controlador PID.
+     * 
+     * @return Retorna um inteiro representando o valor do segundo input.
+     */
     int dualPID::getInput2(){
         return input2;
     }
-     int dualPID::getOutput1(){
+
+    /**
+     * @brief Obtém o valor do primeiro output.
+     * 
+     * Este método retorna o valor atual do primeiro output do controlador PID.
+     * 
+     * @return Retorna um inteiro representando o valor do primeiro output.
+     */
+    int dualPID::getOutput1(){
         return output1;
     }
-     int dualPID::getOutput2(){
+
+    /**
+     * @brief Obtém o valor do segundo output.
+     * 
+     * Este método retorna o valor atual do segundo output do controlador PID.
+     * 
+     * @return Retorna um inteiro representando o valor do segundo output.
+     */
+    int dualPID::getOutput2(){
         return output2;
     }
+
+    /**
+     * @brief Obtém o valor do setpoint.
+     * 
+     * Este método retorna o valor atual do setpoint do controlador PID.
+     * 
+     * @return Retorna um inteiro representando o valor do setpoint.
+     */
     int dualPID::getSetpoint(){
         return setpoint;
     }

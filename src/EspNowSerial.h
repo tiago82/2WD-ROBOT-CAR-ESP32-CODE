@@ -10,6 +10,8 @@ struct DataStruct {
   char message[100];
 };
 
+
+
 class EspNowSerial : public Print { // A classe EspNowSerial herda da classe Print
   private:
     uint8_t *targetMAC;
@@ -26,10 +28,16 @@ class EspNowSerial : public Print { // A classe EspNowSerial herda da classe Pri
       memcpy(&dataRecv, incomingData, sizeof(dataRecv));
       //Serial.println("Mensagem Recebida via ESP-NOW: " + String(dataRecv.message));
       Serial.println(String(dataRecv.message));
+
+      //ESEspNowSerial::Serialcommand = String(dataRecv.message); 
       
+      Serialcommand = String(dataRecv.message);    
     }
 
   public:
+     static String Serialcommand;
+     
+    
     EspNowSerial(uint8_t *macAddress) {
       targetMAC = macAddress;
     }
@@ -67,7 +75,16 @@ class EspNowSerial : public Print { // A classe EspNowSerial herda da classe Pri
       }
     }
 
-    void sendData(String message) {
+    /**
+     * @brief Envia uma mensagem para o dispositivo alvo.
+     * 
+     * Este método converte a mensagem de string para um array de caracteres, 
+     * coloca-a em uma estrutura de dados e envia essa estrutura de dados 
+     * para o dispositivo alvo usando ESP-NOW.
+     * 
+     * @param message A mensagem a ser enviada.
+     */
+    void EspNowSerial::sendData(String message) {
       DataStruct dataSend;
       message.toCharArray(dataSend.message, sizeof(dataSend.message));
       esp_now_send(targetMAC, (uint8_t *)&dataSend, sizeof(DataStruct));
@@ -78,6 +95,8 @@ class EspNowSerial : public Print { // A classe EspNowSerial herda da classe Pri
       
     }
 };
+
+String EspNowSerial::Serialcommand;
 
 // class espNowSerialClass : public Print {
 // public:

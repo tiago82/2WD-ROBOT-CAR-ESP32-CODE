@@ -68,9 +68,19 @@ void updateEncoderPrint() {
   }
 }
 
+/**
+ * @brief Retorna o valor do pulso 1.
+ * 
+ * @return O valor do pulso 1.
+ */
 int getpulse1(){
   return pulseCountEncoder1;
 } 
+/**
+ * @brief Retorna o valor do pulso 2.
+ * 
+ * @return O valor do pulso 2.
+ */
 int getpulse2(){
   return pulseCountEncoder2;
 } 
