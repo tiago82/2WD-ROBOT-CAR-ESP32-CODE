@@ -84,7 +84,7 @@ class EspNowSerial : public Print { // A classe EspNowSerial herda da classe Pri
      * 
      * @param message A mensagem a ser enviada.
      */
-    void EspNowSerial::sendData(String message) {
+    void sendData(String message) {
       DataStruct dataSend;
       message.toCharArray(dataSend.message, sizeof(dataSend.message));
       esp_now_send(targetMAC, (uint8_t *)&dataSend, sizeof(DataStruct));
@@ -108,7 +108,5 @@ String EspNowSerial::Serialcommand;
 //     return 1; // Retorna o número de bytes escritos
 //   }
 // };
-
-
 
 #endif

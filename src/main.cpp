@@ -40,7 +40,7 @@ void printEspNow(){
 
     double kp, ki, kd;
     std::tie(kp, ki, kd) = setpid.getconstants();
-   
+    espNowSerial.sendData(String(kp));
 }
 
 void setup() {
