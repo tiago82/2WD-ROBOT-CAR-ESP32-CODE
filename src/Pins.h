@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 
-//Motor
+// Motor
 #define EN1 22 // Motor1 Esquerdo
 #define IN1 25
 #define IN2 26
@@ -12,30 +12,29 @@
 #define IN3 32
 #define IN4 33
 
-//Encoder
+// Encoder
 #define M1_S1 1 // TX0 - M1 Motor Esquerdo
-#define M1_S2 3 // RX0 
+#define M1_S2 3 // RX0
 
 #define M2_S1 17 // TX2 - M2 Motor Direito
 #define M2_S2 16 // RX2
 
-
-//RFID (HSPI)
-#define SS_RFID_PIN 5   // Define o pino SDA do MFRC522
-#define RST_RFID_PIN 2  // Define o pino RST do MFRC522
+// RFID (HSPI)
+#define SS_RFID_PIN 5  // Define o pino SDA do MFRC522
+#define RST_RFID_PIN 2 // Define o pino RST do MFRC522
 
 #define RFID_SCK 18
 #define RFID_MOSI 23
 #define RFID_MISO 19
 
-//NRF24 (VSPI)
-#define CE_RFID_PIN 27   // Define o pino CE do módulo NRF24L01
+// NRF24 (VSPI)
+#define CE_RFID_PIN 27  // Define o pino CE do módulo NRF24L01
 #define CSN_RFID_PIN 15 // Define o pino CSN do módulo NRF24L01
 
-//Led
+// Led
 #define LED_PCB 4
 
-//Sonar
+// Sonar
 #define ECHO_PIN 13
 #define TRIG_PIN 15
 

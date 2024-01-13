@@ -8,46 +8,53 @@ volatile unsigned long lastUpdateTime = 0;
 typedef void (*FuncPtr)(); // Define um tipo de ponteiro para função
 
 void startEncoder(int pinEncoder1, int pinEncoder2);
-void updateEncoder(); // Atualiza a contagem de pulsos 
+void updateEncoder();             // Atualiza a contagem de pulsos
 void updateEncoder(FuncPtr func); // Atualiza a contagem de pulsos e executa uma função passada como parâmetro, Importante para chamar funcao que calcula PID.
-void updateEncoderPrint(); // Atualiza a contagem de pulsos e imprime o valor por serial.
-int getpulse1(); // Retorna o número atual de pulsos por segundo .
-int getpulse2(); // Retorna o número atual de pulsos por segundo .
+void updateEncoderPrint();        // Atualiza a contagem de pulsos e imprime o valor por serial.
+int getpulse1();                  // Retorna o número atual de pulsos por segundo .
+int getpulse2();                  // Retorna o número atual de pulsos por segundo .
 
-
-void ICACHE_RAM_ATTR funcaoInterrupcao1() {
+void ICACHE_RAM_ATTR funcaoInterrupcao1()
+{
   pulseCountEncoder1++;
 }
-void ICACHE_RAM_ATTR funcaoInterrupcao2() {
+void ICACHE_RAM_ATTR funcaoInterrupcao2()
+{
   pulseCountEncoder2++;
 }
 
-void startEncoder(int pinEncoder1) {
+void startEncoder(int pinEncoder1)
+{
   pinMode(pinEncoder1, INPUT_PULLDOWN);
   attachInterrupt(digitalPinToInterrupt(pinEncoder1), funcaoInterrupcao1, RISING);
 }
 
-void startEncoder(int pinEncoder1, int pinEncoder2) {
+void startEncoder(int pinEncoder1, int pinEncoder2)
+{
   pinMode(pinEncoder1, INPUT_PULLDOWN);
   pinMode(pinEncoder2, INPUT_PULLDOWN);
   attachInterrupt(digitalPinToInterrupt(pinEncoder1), funcaoInterrupcao1, RISING);
   attachInterrupt(digitalPinToInterrupt(pinEncoder2), funcaoInterrupcao2, RISING);
 }
 
-void updateEncoder() {
+void updateEncoder()
+{
   unsigned long currentTime = millis();
-  if (currentTime - lastUpdateTime >= timeCountEncoder) {
-    //Serial.print("Pulsos por segundo: ");
-    //Serial.println(pulseCountEncoder);
+  if (currentTime - lastUpdateTime >= timeCountEncoder)
+  {
+    // Serial.print("Pulsos por segundo: ");
+    // Serial.println(pulseCountEncoder);
     pulseCountEncoder1 = 0;
     pulseCountEncoder2 = 0;
     lastUpdateTime = currentTime;
   }
 }
 
-void updateEncoder(FuncPtr func) {
+void updateEncoder(FuncPtr func)
+{
   unsigned long currentTime = millis();
-  if (currentTime - lastUpdateTime >= timeCountEncoder) {
+  if (currentTime - lastUpdateTime >= timeCountEncoder)
+  {
     func(); // Chama a função passada como argumento
     pulseCountEncoder1 = 0;
     pulseCountEncoder2 = 0;
@@ -55,9 +62,11 @@ void updateEncoder(FuncPtr func) {
   }
 }
 
-void updateEncoderPrint() {
+void updateEncoderPrint()
+{
   unsigned long currentTime = millis();
-  if (currentTime - lastUpdateTime >= timeCountEncoder) {
+  if (currentTime - lastUpdateTime >= timeCountEncoder)
+  {
     Serial.print("Pulsos por segundo1: ");
     Serial.print(pulseCountEncoder1);
     Serial.print(" Pulsos por segundo2: ");
@@ -70,18 +79,19 @@ void updateEncoderPrint() {
 
 /**
  * @brief Retorna o valor do pulso 1.
- * 
+ *
  * @return O valor do pulso 1.
  */
-int getpulse1(){
+int getpulse1()
+{
   return pulseCountEncoder1;
-} 
+}
 /**
  * @brief Retorna o valor do pulso 2.
- * 
+ *
  * @return O valor do pulso 2.
  */
-int getpulse2(){
+int getpulse2()
+{
   return pulseCountEncoder2;
-} 
-
+}

@@ -5,8 +5,11 @@ class SerialSetPID{
 private:
     double kp, ki, kd;
     double setpoint;
+
+    String input; 
     
 public:
+  
   /**
    * @brief Ajusta os parâmetros do controlador PID com base em uma entrada de string.
    * 
@@ -19,7 +22,7 @@ public:
    */
   void ajustarPIDBT(String Input) {
 
-    String input = Input;
+    input = Input;
 
     // Verifica se a entrada começa com "kp"
     if (input.startsWith("kp")) {
