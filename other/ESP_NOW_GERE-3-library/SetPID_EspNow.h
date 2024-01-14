@@ -47,7 +47,7 @@ double MyDerivedClass::ki;
 double MyDerivedClass::kd;
 double MyDerivedClass::setpoint;
 
-MyDerivedClass::MyDerivedClass(uint8_t *macAddress) : EspNowSerial(macAddress) { // Construtor da subclasse com parametro que passa o parametro para outra classe. sem utilizar ": EspNowSerial(macAddress)" estava chamado a outra classe sem contrutor
+MyDerivedClass::MyDerivedClass(uint8_t *macAddress) : EspNowSerial(macAddress) { // Construtor da subclasse com parametro que passa o parametro para outra classe. Sem utilizar ": EspNowSerial(macAddress)" estava chamado o construtor sem parametro inexistente da outra classe base, ocasionando erro.
     macAddress2Esp32 = macAddress;
   }
 
