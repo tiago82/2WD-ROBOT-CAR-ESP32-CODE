@@ -1,15 +1,18 @@
 #include <esp_now.h>
 #include <WiFi.h>
-#include "nowtest2.h"
+//#include "nowtest2.h"
+//#include "ESPNOWSERIAL.h"
 
-EspNowSerial espnn;
+#include "operation.h"
+
+MyDerivedClass adss;
 
 void setup() {
-  espnn.init();
+  adss.init();
   
 }
 
 void loop() {
-  espnn.loop();
+  adss.loop();
 
 }
