@@ -16,13 +16,13 @@ struct DataStruct {
   char message[100];
 };
 
-class EspNowSerial {
+class EspNowSerial : public Print {
 public:
   static DataStruct dataSend;
   static DataStruct dataRecv;
   static uint8_t *macAddress2Esp32;
-  
- 
+
+
   EspNowSerial(uint8_t *macAddress);
   ~EspNowSerial();
 
@@ -31,7 +31,20 @@ public:
   static void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status);
   static void OnDataRecv(const uint8_t *mac, const uint8_t *incomingData, int len);
   static void sendData(String message);
+  void disableESPNow() {
+    esp_now_deinit();  // Desativa o ESP-NOW
+  }
 
+  size_t write(uint8_t c) override {  // Sobrescreve a função write da classe Print
+    // Esta implementação ainda é necessária para outros usos de write
+    esp_now_send(macAddress2Esp32, &c, sizeof(uint8_t));
+    return 1;  // Retorna o número de bytes escritos
+  }
+
+  size_t write(const uint8_t *buffer, size_t size) override {
+    esp_now_send(macAddress2Esp32, buffer, size);
+    return size;  // Retorna o número de bytes escritos
+  }
 private:
   esp_now_peer_info_t peerInfo;
 };
