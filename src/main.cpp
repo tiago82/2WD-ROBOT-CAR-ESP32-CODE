@@ -36,13 +36,10 @@ void printEspNow()
   motor.setSpeed(dualpid.getOutput1(), dualpid.getOutput2());
 
   //setpid2.sendData(String(getpulse1()) + "," + String(getpulse2())); // Plot
-
-  // espNowSerial.print(String(dualpid.getOutput1())+","+String(dualpid.getInput1())); // Convert the integer to a string before sending
-
+  setpid2.print(String(dualpid.getOutput1())+","+String(dualpid.getInput1())); // Convert the integer to a string before sending
   //setpid.ajustarPIDBT(myString);
-
- 
   //setpid2.sendData(String(kp));
+  
 }
 
 void setup()
