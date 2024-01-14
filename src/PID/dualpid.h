@@ -34,14 +34,15 @@ public:
 // ====================================================================================================
 
 // membros de dados estáticos de ponto flutuante não podem ser inicializados diretamente na classe
-double dualPID::kp1 = 30, dualPID::ki1 = 0.2, dualPID::kd1 = 1;
-double dualPID::kp2 = 0, dualPID::ki2 = 5, dualPID::kd2 = 0;
+double dualPID::kp1 = 0, dualPID::ki1 = 0, dualPID::kd1 = 0;
+double dualPID::kp2 = 0, dualPID::ki2 = 0, dualPID::kd2 = 0;
 double dualPID::setpoint = 100;
 double dualPID::input1, dualPID::output1;
 double dualPID::input2, dualPID::output2;
 
 void dualPID::init()
 {
+
     myPID1.SetOutputLimits(100, 500); // PWM 10bits vai de 0 a 1023
     myPID2.SetOutputLimits(100, 500);
     myPID1.SetMode(AUTOMATIC);
@@ -52,12 +53,14 @@ void dualPID::deinit()
 {
     myPID1.SetMode(MANUAL);
     myPID2.SetMode(MANUAL);
-    output1 = 0;
-    output2 = 0;
+    // output1 = 0;
+    // output2 = 0;
 }
 
 void dualPID::updatePID(int Input1, int Input2)
 {
+    myPID1.SetTunings(kp1, ki1, kd1);
+    myPID2.SetTunings(kp2, ki2, kd2);
     input1 = Input1;
     input2 = Input2;
     myPID1.Compute();
