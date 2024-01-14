@@ -1,21 +1,22 @@
 #include <Arduino.h>
 
-#include "EspNowSerial.h"
+//#include "EspNowSerial.h"
 #include "MultiEncoder.h"
 #include "PID/dualpid.h"
 #include "Pins.h"
 #include "rfid_functions.h"
 // #include "Led.h"
 #include "MotorDriver.h"
-#include "SerialSetPID.h"
+#include "SetPID_EspNow.h"
+
 
 bool move = false;
 
 uint8_t macAddress2Esp32[] = {0xA8, 0x42, 0xE3, 0xCB, 0x82, 0xEC}; // Replace with the target ESP32's MAC
-EspNowSerial espNowSerial(macAddress2Esp32);
+//EspNowSerial espNowSerial(macAddress2Esp32);
 dualPID dualpid;
-SerialSetPID setpid;
-String myString = EspNowSerial::Serialcommand;
+MyDerivedClass setpid2(macAddress2Esp32);
+//String myString = MyDerivedClass::Serialcommand;
 
 MFRC522 mfrc522(SS_RFID_PIN, RST_RFID_PIN);
 MotorDriver motor(EN1, IN2, IN1, EN2, IN3, IN4);
@@ -34,20 +35,19 @@ void printEspNow()
   dualpid.updatePID(getpulse1(), getpulse2());
   motor.setSpeed(dualpid.getOutput1(), dualpid.getOutput2());
 
-  espNowSerial.sendData(String(getpulse1()) + "," + String(getpulse2())); // Plot
+  //setpid2.sendData(String(getpulse1()) + "," + String(getpulse2())); // Plot
 
   // espNowSerial.print(String(dualpid.getOutput1())+","+String(dualpid.getInput1())); // Convert the integer to a string before sending
 
-  setpid.ajustarPIDBT(myString);
+  //setpid.ajustarPIDBT(myString);
 
-  double kp, ki, kd;
-  std::tie(kp, ki, kd) = setpid.getconstants();
-  espNowSerial.sendData(String(kp));
+ 
+  //setpid2.sendData(String(kp));
 }
 
 void setup()
 {
-  espNowSerial.initESPNow();
+  setpid2.init();
 
   analogWriteResolution(10);
   startEncoder(M1_S2, M2_S1);
