@@ -1,3 +1,11 @@
+/*
+
+  Código de Teste para Comunicação ESP-NOW usando Classe.
+
+  Este código é destinado ao teste de comunicação via ESP-NOW, projetado para ser usado com a subclasse SetPID_EspNow.h.
+
+*/
+
 #ifndef EspNowSerial_h
 #define EspNowSerial_h
 
@@ -10,47 +18,33 @@ struct DataStruct {
 
 class EspNowSerial {
 public:
-  EspNowSerial();
+  static DataStruct dataSend;
+  static DataStruct dataRecv;
+  static uint8_t *macAddress2Esp32;
+  
+ 
+  EspNowSerial(uint8_t *macAddress);
   ~EspNowSerial();
 
   void init();
   void loop();
-  //static double kp, kd, ki, setpoint;
-  static DataStruct dataSend;
-  static DataStruct dataRecv;
-  static uint8_t macAddress2Esp32[6];
-
   static void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status);
   static void OnDataRecv(const uint8_t *mac, const uint8_t *incomingData, int len);
   static void sendData(String message);
 
-
 private:
-
-
   esp_now_peer_info_t peerInfo;
 };
 
 #endif
 
-uint8_t EspNowSerial::macAddress2Esp32[6] = { 0xA8, 0x42, 0xE3, 0xCB, 0x82, 0xEC };
-
+uint8_t *EspNowSerial::macAddress2Esp32;
 DataStruct EspNowSerial::dataSend;
 DataStruct EspNowSerial::dataRecv;
-// double EspNowSerial::kp;
-// double EspNowSerial::ki;
-// double EspNowSerial::kd;
-// double EspNowSerial::setpoint;
 
 
-EspNowSerial::EspNowSerial() {
-  // // Configurar o endereço MAC do ESP32 remoto
-  // macAddress2Esp32[0] = 0xA8;
-  // macAddress2Esp32[1] = 0x42;
-  // macAddress2Esp32[2] = 0xE3;
-  // macAddress2Esp32[3] = 0xCB;
-  // macAddress2Esp32[4] = 0x82;
-  // macAddress2Esp32[5] = 0xEC;
+EspNowSerial::EspNowSerial(uint8_t *macAddress) {
+  macAddress2Esp32 = macAddress;
 }
 
 EspNowSerial::~EspNowSerial() {
@@ -101,56 +95,4 @@ void EspNowSerial::OnDataRecv(const uint8_t *mac, const uint8_t *incomingData, i
   memcpy(&EspNowSerial::dataRecv, incomingData, sizeof(EspNowSerial::dataRecv));
   //Serial.println("Mensagem Recebida via ESP-NOW: " + String(dataRecv.message));
   Serial.println(String(EspNowSerial::dataRecv.message));  // Exibe a mensagem recebida na porta serial
-
-  // String input = String(EspNowSerial::dataRecv.message);
-
-  // input.trim();
-
-  // if (input.startsWith("kp")) {
-  //   EspNowSerial::kp = input.substring(2).toFloat();
-  //   Serial.print("Novo valor de kp: ");
-  //   Serial.println(EspNowSerial::kp);
-  //   EspNowSerial::sendData("Novo valor de kp: " + String(EspNowSerial::kp));
-  // } else if (input.startsWith("ki")) {
-  //   EspNowSerial::ki = input.substring(2).toFloat();
-  //   Serial.print("Novo valor de ki: ");
-  //   Serial.println(EspNowSerial::ki);
-  //   EspNowSerial::sendData("Novo valor de ki: " + String(EspNowSerial::ki));
-  // } else if (input.startsWith("kd")) {
-  //   EspNowSerial::kd = input.substring(2).toFloat();
-  //   Serial.print("Novo valor de kd: ");
-  //   Serial.println(EspNowSerial::kd);
-  //   EspNowSerial::sendData("Novo valor de kd: " + String(EspNowSerial::kd));
-  // } else if (input.startsWith("se")) {
-  //   EspNowSerial::setpoint = input.substring(2).toFloat();
-  //   Serial.print("Novo valor de setpoint: ");
-  //   Serial.println(EspNowSerial::setpoint);
-  //   EspNowSerial::sendData("Novo valor de setpoint: " + String(EspNowSerial::setpoint));
-  // } else {
-  //   char charArray[input.length() + 1];
-  //   input.toCharArray(charArray, input.length() + 1);
-
-  //   char *token = strtok(charArray, " ");
-
-  //   if (token != NULL) {
-  //     EspNowSerial::kp = atof(token);
-  //     token = strtok(NULL, " ");
-  //   }
-
-  //   if (token != NULL) {
-  //     EspNowSerial::ki = atof(token);
-  //     token = strtok(NULL, " ");
-  //   }
-
-  //   if (token != NULL) {
-  //     EspNowSerial::kd = atof(token);
-  //   }
-
-  //   Serial.print(EspNowSerial::kp);
-  //   Serial.print(" ");
-  //   Serial.print(EspNowSerial::ki);
-  //   Serial.print(" ");
-  //   Serial.println(EspNowSerial::kd);
-  //   EspNowSerial::sendData("KP: " + String(EspNowSerial::kp) + " KI: " + String(EspNowSerial::ki) + " KD: " + String(EspNowSerial::kd));
-  // }
 }

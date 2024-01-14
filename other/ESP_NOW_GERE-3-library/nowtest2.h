@@ -1,3 +1,9 @@
+/*
+
+Código de Teste Usando Classe para Implementação do ESP-NOW com Seleção das Variáveis PID
+
+*/
+
 #ifndef EspNowSerial_h
 #define EspNowSerial_h
 

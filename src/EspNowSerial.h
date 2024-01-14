@@ -103,6 +103,8 @@ public:
   }
 };
 
+//===========================================================================================================================
+
 String EspNowSerial::Serialcommand;
 
 // class espNowSerialClass : public Print {

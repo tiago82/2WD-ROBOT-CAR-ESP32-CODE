@@ -1,3 +1,12 @@
+/*
+  
+  Esta classe é derivada da classe base EspNowSerial e possui funcionalidades adicionais para lidar com a comunicação ESP-NOW
+  e a seleção das variáveis PID.
+
+  Ela pega a classe principal que só se comunica e implementa a seleção de PID
+
+*/
+
 #ifndef MyDerivedClass_h
 #define MyDerivedClass_h
 
@@ -5,10 +14,12 @@
 
 class MyDerivedClass : public EspNowSerial {
 public:
-  MyDerivedClass();
-  ~MyDerivedClass();
 
- 
+  // ~MyDerivedClass();
+  static uint8_t *macAddress2Esp32;
+  
+
+  MyDerivedClass(uint8_t *macAddress);
   static double kp, kd, ki, setpoint;
   static DataStruct dataSend;
   static DataStruct dataRecv;
@@ -17,16 +28,17 @@ public:
   static void OnDataRecv(const uint8_t *mac, const uint8_t *incomingData, int len);
   static void sendData(String message);
 
-
   // Adicione métodos adicionais conforme necessário
 
 private:
   // Adicione membros privados conforme necessário
   esp_now_peer_info_t peerInfo;
+
 };
 
 #endif // ===========================================================================================================================
 
+uint8_t* MyDerivedClass::macAddress2Esp32; //  inicializando esse ponteiro estático.
 DataStruct MyDerivedClass::dataRecv;
 DataStruct MyDerivedClass::dataSend;
 
@@ -35,15 +47,9 @@ double MyDerivedClass::ki;
 double MyDerivedClass::kd;
 double MyDerivedClass::setpoint;
 
-
-MyDerivedClass::MyDerivedClass() {
-  // Inicialize membros adicionais, se necessário
-}
-
-MyDerivedClass::~MyDerivedClass() {
-  // Adicione quaisquer limpezas necessárias ao destruir a instância da classe
-}
-
+MyDerivedClass::MyDerivedClass(uint8_t *macAddress) : EspNowSerial(macAddress) { // Construtor da subclasse com parametro que passa o parametro para outra classe. sem utilizar ": EspNowSerial(macAddress)" estava chamado a outra classe sem contrutor
+    macAddress2Esp32 = macAddress;
+  }
 
 void MyDerivedClass::OnDataRecv(const uint8_t *mac, const uint8_t *incomingData, int len) {
   memcpy(&MyDerivedClass::dataRecv, incomingData, sizeof(MyDerivedClass::dataRecv));
@@ -58,22 +64,22 @@ void MyDerivedClass::OnDataRecv(const uint8_t *mac, const uint8_t *incomingData,
     MyDerivedClass::kp = input.substring(2).toFloat();
     Serial.print("Novo valor de kp: ");
     Serial.println(MyDerivedClass::kp);
-    MyDerivedClass::sendData("Novo valor de kp: " + String(MyDerivedClass::kp));
+    EspNowSerial::sendData("Novo valor de kp: " + String(MyDerivedClass::kp));
   } else if (input.startsWith("ki")) {
     MyDerivedClass::ki = input.substring(2).toFloat();
     Serial.print("Novo valor de ki: ");
     Serial.println(MyDerivedClass::ki);
-    MyDerivedClass::sendData("Novo valor de ki: " + String(MyDerivedClass::ki));
+    EspNowSerial::sendData("Novo valor de ki: " + String(MyDerivedClass::ki));
   } else if (input.startsWith("kd")) {
     MyDerivedClass::kd = input.substring(2).toFloat();
     Serial.print("Novo valor de kd: ");
     Serial.println(MyDerivedClass::kd);
-    MyDerivedClass::sendData("Novo valor de kd: " + String(MyDerivedClass::kd));
+    EspNowSerial::sendData("Novo valor de kd: " + String(MyDerivedClass::kd));
   } else if (input.startsWith("se")) {
     MyDerivedClass::setpoint = input.substring(2).toFloat();
     Serial.print("Novo valor de setpoint: ");
     Serial.println(MyDerivedClass::setpoint);
-    MyDerivedClass::sendData("Novo valor de setpoint: " + String(MyDerivedClass::setpoint));
+    EspNowSerial::sendData("Novo valor de setpoint: " + String(MyDerivedClass::setpoint));
   } else {
     char charArray[input.length() + 1];
     input.toCharArray(charArray, input.length() + 1);
@@ -99,14 +105,8 @@ void MyDerivedClass::OnDataRecv(const uint8_t *mac, const uint8_t *incomingData,
     Serial.print(MyDerivedClass::ki);
     Serial.print(" ");
     Serial.println(MyDerivedClass::kd);
-    MyDerivedClass::sendData("KP: " + String(MyDerivedClass::kp) + " KI: " + String(MyDerivedClass::ki) + " KD: " + String(MyDerivedClass::kd));
+    EspNowSerial::sendData("KP: " + String(MyDerivedClass::kp) + " KI: " + String(MyDerivedClass::ki) + " KD: " + String(MyDerivedClass::kd));
   }
-}
-
-void MyDerivedClass::sendData(String message) {
-  DataStruct dataSend;
-  message.toCharArray(dataSend.message, sizeof(dataSend.message));
-  esp_now_send(macAddress2Esp32, (uint8_t *)&dataSend, sizeof(DataStruct));
 }
 
 void MyDerivedClass::init() {
