@@ -1,5 +1,5 @@
 /*
-  
+
   Esta classe é derivada da classe base EspNowSerial e possui funcionalidades adicionais para lidar com a comunicação ESP-NOW
   e a seleção das variáveis PID.
 
@@ -12,12 +12,11 @@
 
 #include "EspNowSerial.h"
 
-class MyDerivedClass : public EspNowSerial {
+class MyDerivedClass : public EspNowSerial
+{
 public:
-
   // ~MyDerivedClass();
   static uint8_t *macAddress2Esp32;
-  
 
   MyDerivedClass(uint8_t *macAddress);
   static double kp, kd, ki, setpoint;
@@ -26,19 +25,17 @@ public:
 
   void init();
   static void OnDataRecv(const uint8_t *mac, const uint8_t *incomingData, int len);
-  static void sendData(String message);
 
   // Adicione métodos adicionais conforme necessário
 
 private:
   // Adicione membros privados conforme necessário
   esp_now_peer_info_t peerInfo;
-
 };
 
 // ===========================================================================================================================
 
-uint8_t* MyDerivedClass::macAddress2Esp32; //  inicializando esse ponteiro estático.
+uint8_t *MyDerivedClass::macAddress2Esp32; //  inicializando esse ponteiro estático.
 DataStruct MyDerivedClass::dataRecv;
 DataStruct MyDerivedClass::dataSend;
 
@@ -46,57 +43,90 @@ double MyDerivedClass::kp;
 double MyDerivedClass::ki;
 double MyDerivedClass::kd;
 double MyDerivedClass::setpoint;
+void myFunction1();
+void myFunction2();
+void gravarEPROM();
 
-MyDerivedClass::MyDerivedClass(uint8_t *macAddress) : EspNowSerial(macAddress) { // Construtor da subclasse com parametro que passa o parametro para outra classe. Sem utilizar ": EspNowSerial(macAddress)" estava chamado o construtor sem parametro inexistente da outra classe base, ocasionando erro.
-    macAddress2Esp32 = macAddress;
-  }
+MyDerivedClass::MyDerivedClass(uint8_t *macAddress) : EspNowSerial(macAddress)
+{ // Construtor da subclasse com parametro que passa o parametro para outra classe. Sem utilizar ": EspNowSerial(macAddress)" estava chamado o construtor sem parametro inexistente da outra classe base, ocasionando erro.
+  macAddress2Esp32 = macAddress;
+}
 
-void MyDerivedClass::OnDataRecv(const uint8_t *mac, const uint8_t *incomingData, int len) {
+void MyDerivedClass::OnDataRecv(const uint8_t *mac, const uint8_t *incomingData, int len)
+{
   memcpy(&MyDerivedClass::dataRecv, incomingData, sizeof(MyDerivedClass::dataRecv));
-  //Serial.println("Mensagem Recebida via ESP-NOW: " + String(dataRecv.message));
-  Serial.println(String(MyDerivedClass::dataRecv.message));  // Exibe a mensagem recebida na porta serial
+  // Serial.println("Mensagem Recebida via ESP-NOW: " + String(dataRecv.message));
+  Serial.println(String(MyDerivedClass::dataRecv.message)); // Exibe a mensagem recebida na porta serial
 
   String input = String(MyDerivedClass::dataRecv.message);
 
   input.trim();
 
-  if (input.startsWith("kp")) {
+  if (input.startsWith("kp"))
+  {
     MyDerivedClass::kp = input.substring(2).toFloat();
     Serial.print("Novo valor de kp: ");
     Serial.println(MyDerivedClass::kp);
     EspNowSerial::sendData("Novo valor de kp: " + String(MyDerivedClass::kp));
-  } else if (input.startsWith("ki")) {
+  }
+  else if (input.startsWith("ki"))
+  {
     MyDerivedClass::ki = input.substring(2).toFloat();
     Serial.print("Novo valor de ki: ");
     Serial.println(MyDerivedClass::ki);
     EspNowSerial::sendData("Novo valor de ki: " + String(MyDerivedClass::ki));
-  } else if (input.startsWith("kd")) {
+  }
+  else if (input.startsWith("kd"))
+  {
     MyDerivedClass::kd = input.substring(2).toFloat();
     Serial.print("Novo valor de kd: ");
     Serial.println(MyDerivedClass::kd);
     EspNowSerial::sendData("Novo valor de kd: " + String(MyDerivedClass::kd));
-  } else if (input.startsWith("se")) {
+  }
+  else if (input.startsWith("se"))
+  {
     MyDerivedClass::setpoint = input.substring(2).toFloat();
     Serial.print("Novo valor de setpoint: ");
     Serial.println(MyDerivedClass::setpoint);
     EspNowSerial::sendData("Novo valor de setpoint: " + String(MyDerivedClass::setpoint));
-  } else {
+  }
+  else if (input.startsWith("r"))
+  {
+    esp_restart();
+  }
+  else if (input.startsWith("w"))
+  {
+    myFunction1();
+  }
+  else if (input.startsWith("e"))
+  {
+    myFunction2();
+  }
+  else if (input.startsWith("sa"))
+  {
+    gravarEPROM();
+  }
+  else
+  {
     char charArray[input.length() + 1];
     input.toCharArray(charArray, input.length() + 1);
 
     char *token = strtok(charArray, " ");
 
-    if (token != NULL) {
+    if (token != NULL)
+    {
       MyDerivedClass::kp = atof(token);
       token = strtok(NULL, " ");
     }
 
-    if (token != NULL) {
+    if (token != NULL)
+    {
       MyDerivedClass::ki = atof(token);
       token = strtok(NULL, " ");
     }
 
-    if (token != NULL) {
+    if (token != NULL)
+    {
       MyDerivedClass::kd = atof(token);
     }
 
@@ -109,12 +139,14 @@ void MyDerivedClass::OnDataRecv(const uint8_t *mac, const uint8_t *incomingData,
   }
 }
 
-void MyDerivedClass::init() {
+void MyDerivedClass::init()
+{
   Serial.begin(115200);
   WiFi.disconnect();
   WiFi.mode(WIFI_STA);
 
-  if (esp_now_init() != ESP_OK) {
+  if (esp_now_init() != ESP_OK)
+  {
     delay(2500);
     ESP.restart();
   }
@@ -126,10 +158,10 @@ void MyDerivedClass::init() {
   peerInfo.channel = 0;
   peerInfo.encrypt = false;
 
-  if (esp_now_add_peer(&peerInfo) != ESP_OK) {
+  if (esp_now_add_peer(&peerInfo) != ESP_OK)
+  {
     ESP.restart();
   }
 }
 
-#endif 
-
+#endif

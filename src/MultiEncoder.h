@@ -1,7 +1,7 @@
 #pragma once
 #include <Arduino.h>
 
-int timeCountEncoder = 100; // faixa em milisegundos de contagem dos pulsos.
+int timeCountEncoder = 500; // faixa em milisegundos de contagem dos pulsos.
 volatile int pulseCountEncoder1 = 0;
 volatile int pulseCountEncoder2 = 0;
 volatile unsigned long lastUpdateTime = 0;

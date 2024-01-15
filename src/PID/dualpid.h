@@ -1,6 +1,8 @@
 #pragma once
 #include <PID_v1.h>
 
+#define SinglePID // comente essa linha para usar o PID duplo
+
 class dualPID
 {
 private:
@@ -16,6 +18,7 @@ public:
 
     void init();
     void deinit();
+    void updatePID(int Input1);
     void updatePID(int input1, int input2);
     void setSetpoint(double Setpoint);
     int getInput1();
@@ -34,20 +37,28 @@ public:
 // ====================================================================================================
 
 // membros de dados estáticos de ponto flutuante não podem ser inicializados diretamente na classe
-double dualPID::kp1 = 0, dualPID::ki1 = 0, dualPID::kd1 = 0;
-double dualPID::kp2 = 0, dualPID::ki2 = 0, dualPID::kd2 = 0;
-double dualPID::setpoint = 100;
+double dualPID::kp1, dualPID::ki1, dualPID::kd1;
+double dualPID::kp2, dualPID::ki2, dualPID::kd2;
+double dualPID::setpoint;
 double dualPID::input1, dualPID::output1;
 double dualPID::input2, dualPID::output2;
 
+#ifdef SinglePID
 void dualPID::init()
 {
+    myPID2.SetOutputLimits(100, 650); // PWM 10bits vai de 0 a 1023
+    myPID2.SetMode(AUTOMATIC);
 
-    myPID1.SetOutputLimits(100, 500); // PWM 10bits vai de 0 a 1023
-    myPID2.SetOutputLimits(100, 500);
+}
+#else
+void dualPID::init()
+{
+    myPID1.SetOutputLimits(200, 500); // PWM 10bits vai de 0 a 1023
+    myPID2.SetOutputLimits(200, 500);
     myPID1.SetMode(AUTOMATIC);
     myPID2.SetMode(AUTOMATIC);
 }
+#endif
 
 void dualPID::deinit()
 {
@@ -55,6 +66,13 @@ void dualPID::deinit()
     myPID2.SetMode(MANUAL);
     // output1 = 0;
     // output2 = 0;
+}
+
+void dualPID::updatePID(int Input1)
+{
+    myPID1.SetTunings(kp1, ki1, kd1);
+    input1 = Input1;
+    myPID1.Compute();
 }
 
 void dualPID::updatePID(int Input1, int Input2)
