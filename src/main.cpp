@@ -7,24 +7,30 @@
 #include "MotorDriver.h"
 #include "SetPID_EspNow.h"
 
+// Variáveis globais
 bool move = false;
 double kp1, kp2;
 double ki1, ki2;
 double kd1, kd2;
 double setpoint;
+
+// Chaves para armazenar valores na Flash
 const char *KP_KEY = "kp";
 const char *KI_KEY = "ki";
 const char *KD_KEY = "kd";
 const char *SETPOINT_KEY = "setpoint";
 
-uint8_t macAddress2Esp32[] = {0xA8, 0x42, 0xE3, 0xCB, 0x82, 0xEC}; // Replace with the target ESP32's MAC
+// Endereço MAC do segundo ESP32
+uint8_t macAddress2Esp32[] = {0xA8, 0x42, 0xE3, 0xCB, 0x82, 0xEC};
+
+// Instâncias de classes
 dualPID dualpid;
 MyDerivedClass setpid2(macAddress2Esp32);
 Preferences preferences;
 MFRC522 mfrc522(SS_RFID_PIN, RST_RFID_PIN);
 MotorDriver motor(EN1, IN2, IN1, EN2, IN3, IN4);
 
-void myFunction1()
+void startMotor()
 {
   // motor.moveForward(move ? 0 : 300);  // Operador ternário (? :) Se move for verdadeiro, escolhemos 0 (parar o motor). Se move for falso, escolhemos 300.
   // move = !move;
@@ -32,7 +38,7 @@ void myFunction1()
   move = true;
 }
 
-void myFunction2()
+void StopMotor()
 {
   dualpid.deinit();
   move = false;
@@ -89,15 +95,11 @@ void setup()
   mfrc522.PCD_Init(); // Inicializa o módulo RFID
   // RFID::addCardTwoFunctions( 0x104a4913, myFunction111 ,myFunction2);
   RFID::addCardFunction(0x104a4913, gravarEPROM);
-  RFID::addCardTwoFunctions(0x10602403, myFunction1, myFunction2);
+  RFID::addCardTwoFunctions(0x10602403, startMotor, StopMotor);
   MyDerivedClass::kp = kp2;
   MyDerivedClass::ki = ki2;
   MyDerivedClass::kd = kd2;
   MyDerivedClass::setpoint = setpoint;
-  dualPID::kp2 = kp2;
-  dualPID::ki2 = ki2;
-  dualPID::kd2 = kd2;
-  dualPID::setpoint = setpoint;
 }
 
 void loop()
@@ -110,8 +112,9 @@ void loop()
   kp2 = MyDerivedClass::kp;
   ki2 = MyDerivedClass::ki;
   kd2 = MyDerivedClass::kd;
-  dualPID::ki2 = kp2;
+  setpoint = MyDerivedClass::setpoint;
+  dualPID::kp2 = kp2;
   dualPID::ki2 = ki2;
   dualPID::kd2 = kd2;
-  setpoint = MyDerivedClass::setpoint;
+  dualPID::setpoint = setpoint;
 }

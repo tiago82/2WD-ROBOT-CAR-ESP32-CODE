@@ -43,8 +43,8 @@ double MyDerivedClass::kp;
 double MyDerivedClass::ki;
 double MyDerivedClass::kd;
 double MyDerivedClass::setpoint;
-void myFunction1();
-void myFunction2();
+void startMotor();
+void StopMotor();
 void gravarEPROM();
 
 MyDerivedClass::MyDerivedClass(uint8_t *macAddress) : EspNowSerial(macAddress)
@@ -96,11 +96,11 @@ void MyDerivedClass::OnDataRecv(const uint8_t *mac, const uint8_t *incomingData,
   }
   else if (input.startsWith("w"))
   {
-    myFunction1();
+    startMotor();
   }
   else if (input.startsWith("e"))
   {
-    myFunction2();
+    StopMotor();
   }
   else if (input.startsWith("sa"))
   {
