@@ -1,9 +1,11 @@
 #pragma once
 #include <Arduino.h>
 
-int timeCountEncoder = 500; // faixa em milisegundos de contagem dos pulsos.
+int timeCountEncoder = 50; // faixa em milisegundos de contagem dos pulsos.
 volatile int pulseCountEncoder1 = 0;
 volatile int pulseCountEncoder2 = 0;
+volatile int pulseTotalCountEncoder1 = 0;
+volatile int pulseTotalCountEncoder2 = 0;
 volatile unsigned long lastUpdateTime = 0;
 typedef void (*FuncPtr)(); // Define um tipo de ponteiro para função
 
@@ -17,10 +19,12 @@ int getpulse2();                  // Retorna o número atual de pulsos por segun
 void ICACHE_RAM_ATTR funcaoInterrupcao1()
 {
   pulseCountEncoder1++;
+  pulseTotalCountEncoder1++;
 }
 void ICACHE_RAM_ATTR funcaoInterrupcao2()
 {
   pulseCountEncoder2++;
+  pulseTotalCountEncoder2++;
 }
 
 void startEncoder(int pinEncoder1)
@@ -94,4 +98,13 @@ int getpulse1()
 int getpulse2()
 {
   return pulseCountEncoder2;
+}
+
+int gettotalpulse1()
+{
+  return pulseTotalCountEncoder1;
+}
+int gettotalpulse2()
+{
+  return pulseTotalCountEncoder2;
 }

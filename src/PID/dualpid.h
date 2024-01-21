@@ -1,7 +1,7 @@
 #pragma once
 #include <PID_v1.h>
 
-#define SinglePID // comente essa linha para usar o PID duplo
+//#define SinglePID // comente essa linha para usar o PID duplo
 
 class dualPID
 {
@@ -46,15 +46,15 @@ double dualPID::input2, dualPID::output2;
 #ifdef SinglePID
 void dualPID::init()
 {
-    myPID2.SetOutputLimits(100, 650); // PWM 10bits vai de 0 a 1023
+    myPID2.SetOutputLimits(220, 650); // PWM 10bits vai de 0 a 1023
     myPID2.SetMode(AUTOMATIC);
 
 }
 #else
 void dualPID::init()
 {
-    myPID1.SetOutputLimits(200, 500); // PWM 10bits vai de 0 a 1023
-    myPID2.SetOutputLimits(200, 500);
+    myPID1.SetOutputLimits(150, 500); // PWM 10bits vai de 0 a 1023
+    myPID2.SetOutputLimits(150, 500);
     myPID1.SetMode(AUTOMATIC);
     myPID2.SetMode(AUTOMATIC);
 }

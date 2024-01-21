@@ -28,7 +28,9 @@ dualPID dualpid;
 MyDerivedClass setpid2(macAddress2Esp32);
 Preferences preferences;
 MFRC522 mfrc522(SS_RFID_PIN, RST_RFID_PIN);
-MotorDriver motor(EN1, IN2, IN1, EN2, IN3, IN4);
+MotorDriver motor(EN1, IN1, IN2, EN2, IN4, IN3);
+
+int OUTPUT_;
 
 void startMotor()
 {
@@ -62,11 +64,20 @@ void gravarEPROM()
 void printEspNow()
 {
   dualpid.updatePID(getpulse1(), getpulse2());
-  motor.setSpeed(dualpid.getOutput1(), dualpid.getOutput2());
+
+  if (OUTPUT_ != dualpid.getOutput2())
+  {
+    OUTPUT_ = dualpid.getOutput2();
+    motor.setSpeed(dualpid.getOutput1(), dualpid.getOutput2());
+  }
+
   setpid2.sendData("input2:" + String(dualpid.getInput2()) + "," + "output2:" + String(dualpid.getOutput2()) + "," + "setpoint:" + String(dualPID::setpoint));
   dualPID::ki2 = kp2;
   dualPID::ki2 = ki2;
   dualPID::kd2 = kd2;
+  dualPID::ki1 = kp2;
+  dualPID::ki1 = ki2;
+  dualPID::kd1 = kd2;
   dualPID::setpoint = setpoint;
 }
 
@@ -116,5 +127,8 @@ void loop()
   dualPID::kp2 = kp2;
   dualPID::ki2 = ki2;
   dualPID::kd2 = kd2;
+  dualPID::kp1 = kp2;
+  dualPID::ki1 = ki2;
+  dualPID::kd1 = kd2;
   dualPID::setpoint = setpoint;
 }
