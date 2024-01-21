@@ -108,3 +108,8 @@ int gettotalpulse2()
 {
   return pulseTotalCountEncoder2;
 }
+void resettotalpulse()
+{
+  pulseTotalCountEncoder1 = 0;
+  pulseTotalCountEncoder2 = 0;
+}
