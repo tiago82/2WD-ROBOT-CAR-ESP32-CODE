@@ -78,6 +78,7 @@ void printEspNow()
   setpid2.sendData(String(gettotalpulse1()) + "," + String(gettotalpulse2())); // exibe o total de pulsos
   // setpid2.sendData(String(getdiferencetotalpulse())); // exibe o diferença de pulsos entre motores
   // setpid2.sendData(String(s(getpulse1(), getpulse2()))); // exibe distancia percorrida
+  setpid2.sendData("quantidade para a rotacao" + String(girarroborGraus(180)));
 
   dualPID::ki2 = kp2;
   dualPID::ki2 = ki2;

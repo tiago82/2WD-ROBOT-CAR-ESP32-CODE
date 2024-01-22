@@ -167,7 +167,7 @@ float s(int pulse1, int pulse2)
 
 const float pi = 3.14159265359;
 const int rev = 1265;     // numero de pulsos por revolucao do encoder(Obtido experimentalmente)
-const int L = 0.15;       // distancia entre as rodas
+const float L = 0.15;       // distancia entre as rodas
 const float circ = 0.207; // circunferencia aproximada em metro da roda (Obtido experimentalmente)
 
 float deltaS(int pulse1, int pulse2)
@@ -195,32 +195,32 @@ void rotate()
 
 /**
  * Calcula o número de pulsos necessários para mover o robô por uma determinada distância.
- * 
+ *
  * @param distancia A distância em metros que o robô deve percorrer.
  * @return O número de pulsos necessários para mover o robô pela distância especificada.
  */
 int moverrobotdistancia(float distancia) // em metros
 {
-  int npulsos = (distancia * rev) / (circ); 
+  int npulsos = (distancia * rev) / (circ);
   return npulsos;
 }
 
 /**
  * Calcula o número de pulsos necessários para uma determinada quantidade de revoluções.
- * 
+ *
  * @param quantidadederev A quantidade de revoluções desejada. // Documentação para o parâmetro "quantidadederev"
  * @return O número de pulsos necessários.
  */
 int revolucoesdasrodas(int quantidadederev) // em metros
 {
-  int npulsos = rev*quantidadederev;
+  int npulsos = rev * quantidadederev;
 
   return npulsos;
 }
 
 /**
  * Calcula o número de rotações necessárias para percorrer uma determinada distância com base na largura do robô.
- * 
+ *
  * @param larguraRobo A largura do robô em unidades de medida.
  * @return O número de rotações necessárias para percorrer a distância especificada.
  */
@@ -234,15 +234,26 @@ int revolucoesdasrodas(int quantidadederev) // em metros
 //     return numRotações;
 // }
 
-int girarroborGraus(int graus) {
-  float larguraRobo = L;  // Largura do robô em metros
-  float raioRodas = circ / (2 * pi);;    // Raio das rodas em metros
-  int pulsosPorRevolucao = rev;
+/**
+ * Calcula o deslocamento angular das rodas do robô em pulsos, dado um ângulo em graus.
+ * 
+ * @param graus O ângulo em graus.
+ * @return O deslocamento angular das rodas do robô em pulsos.
+ */
+float girarroborGraus(int graus)
+{
+  const float RaioRobo = 0.145 / 2;          // Largura do robô em metros
+  const float raioRodas = circ / (2 * pi); // Raio das rodas em metros
+  const int pulsosPorRevolucao = rev;
 
-  // Calcule a quantidade de pulsos necessários para girar a quantidade desejada de graus
-  float distanciaEntreRodas = larguraRobo;  // Distância entre as rodas
-  float circunferenciaTrajetoria = PI * distanciaEntreRodas * graus / 360.0;  // Circunferência da trajetória
-  int pulsosParaGirar = static_cast<int>((circunferenciaTrajetoria / (2 * PI * raioRodas)) * pulsosPorRevolucao);
+  float deltathetaRobo = graus * pi / 180; // deslocamento angular do robo
 
-  return pulsosParaGirar;
+  // float deltathetaRoda = (2 * pi * pulse1) / rev; // deslocamento angular da roda
+  // float deltaS =  raioRodas*deltathetaRoda; // distancia linear da roda percorrida pelo robo
+  // float deltathetaRobo = deltaS / RaioRobo; // deslocamento angular do robo
+  // float deltathetaRobo = raioRodas*(2 * pi * pulse1) / rev / RaioRobo; // deslocamento angular do robo
+
+  float pulse1 = ( RaioRobo * deltathetaRobo * pulsosPorRevolucao) / ( raioRodas* 2 * pi); // deslocamento angular do robo
+
+  return pulse1;
 }
