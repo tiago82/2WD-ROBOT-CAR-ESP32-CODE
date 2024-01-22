@@ -77,20 +77,20 @@ void printEspNow()
     OUTPUT_ = dualpid.getOutput2();
     if (frente)
     {
-      motor.setSpeed(dualpid.getOutput1(), dualpid.getOutput2());
+      motor.setSpeed(300, 300);
     }
     if (gira)
     {
-      motor.setSpeed(dualpid.getOutput1(), -dualpid.getOutput2());
+      motor.setSpeed(-dualpid.getOutput1(), -dualpid.getOutput2());
     }
     
   }
 
   // setpid2.sendData("input2:" + String(dualpid.getInput2()) + "," + "output2:" + String(dualpid.getOutput2()) + "," + "setpoint:" + String(dualPID::setpoint)); // exibe o valor do sensor
-  setpid2.sendData(String(gettotalpulse1()) + "," + String(gettotalpulse2())); // exibe o total de pulsos
-  // setpid2.sendData(String(getdiferencetotalpulse())); // exibe o diferença de pulsos entre motores
+  //setpid2.sendData(String(gettotalpulse1()) + "," + String(gettotalpulse2())); // exibe o total de pulsos
+  setpid2.sendData(String(getdiferencetotalpulse())); // exibe o diferença de pulsos entre motores
   // setpid2.sendData(String(s(getpulse1(), getpulse2()))); // exibe distancia percorrida
-  setpid2.sendData("quantidade para a rotacao" + String(girarroborGraus(180)));
+  //setpid2.sendData("quantidade para a rotacao" + String(girarroborGraus(180)));
 
   dualPID::ki2 = kp2;
   dualPID::ki2 = ki2;
@@ -161,7 +161,7 @@ void loop()
 
   if(frente)
   {
-    if (gettotalpulse1() >= moverpordistancia(0.60))
+    if (gettotalpulse1() >= moverpordistancia(0.8))
     {
       frente = false;
       setpid2.sendData("total " + String(gettotalpulse1()));
@@ -173,14 +173,14 @@ void loop()
   }
   if(gira)
   {
-    if (gettotalpulse1() >= girarroborGraus(180))
+    if (gettotalpulse1() >= moverpordistancia(0.8))
     {
       frente = true;
       gira = false;
       setpid2.sendData("total " + String(gettotalpulse1()));
       StopMotor();
       delay(500);
-      startMotor();
+      
     }
   }
 }
