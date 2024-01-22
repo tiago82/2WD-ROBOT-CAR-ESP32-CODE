@@ -257,3 +257,15 @@ float girarroborGraus(int graus)
 
   return pulse1;
 }
+
+/**
+ * Calcula o número de pulsos necessários para percorrer uma determinada distância.
+ * 
+ * @param distancia A distância a ser percorrida.
+ * @return O número de pulsos necessários.
+ */
+int moverpordistancia(float distancia)
+{
+  int npulsos = (distancia * rev) / (circ);
+  return npulsos;
+}

@@ -22,6 +22,10 @@ const char *KI_KEY = "ki";
 const char *KD_KEY = "kd";
 const char *SETPOINT_KEY = "setpoint";
 
+//estados
+bool frente = true;
+bool gira = false;
+
 // Endereço MAC do segundo ESP32
 uint8_t macAddress2Esp32[] = {0xA8, 0x42, 0xE3, 0xCB, 0x82, 0xEC};
 
@@ -71,7 +75,15 @@ void printEspNow()
   if (OUTPUT_ != dualpid.getOutput2())
   {
     OUTPUT_ = dualpid.getOutput2();
-    motor.setSpeed(dualpid.getOutput1(), -dualpid.getOutput2());
+    if (frente)
+    {
+      motor.setSpeed(dualpid.getOutput1(), dualpid.getOutput2());
+    }
+    if (gira)
+    {
+      motor.setSpeed(dualpid.getOutput1(), -dualpid.getOutput2());
+    }
+    
   }
 
   // setpid2.sendData("input2:" + String(dualpid.getInput2()) + "," + "output2:" + String(dualpid.getOutput2()) + "," + "setpoint:" + String(dualPID::setpoint)); // exibe o valor do sensor
@@ -121,6 +133,8 @@ void setup()
   MyDerivedClass::setpoint = setpoint;
 }
 
+
+
 void loop()
 {
   RFID::checkRFIDPresent(mfrc522);
@@ -145,9 +159,28 @@ void loop()
   //   StopMotor();
   // }
 
-  if (gettotalpulse1() >= girarroborGraus(180) )
+  if(frente)
   {
-    setpid2.sendData("total " + String(gettotalpulse1()));
-    StopMotor();
+    if (gettotalpulse1() >= moverpordistancia(0.60))
+    {
+      frente = false;
+      setpid2.sendData("total " + String(gettotalpulse1()));
+      StopMotor();
+      gira = true;
+      delay(500);
+      startMotor();
+    }
+  }
+  if(gira)
+  {
+    if (gettotalpulse1() >= girarroborGraus(180))
+    {
+      frente = true;
+      gira = false;
+      setpid2.sendData("total " + String(gettotalpulse1()));
+      StopMotor();
+      delay(500);
+      startMotor();
+    }
   }
 }
