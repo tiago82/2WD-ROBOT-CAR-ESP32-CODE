@@ -30,15 +30,15 @@ void ICACHE_RAM_ATTR funcaoInterrupcao2()
 void startEncoder(int pinEncoder1)
 {
   pinMode(pinEncoder1, INPUT_PULLDOWN);
-  attachInterrupt(digitalPinToInterrupt(pinEncoder1), funcaoInterrupcao1, RISING);
+  attachInterrupt(digitalPinToInterrupt(pinEncoder1), funcaoInterrupcao1, CHANGE );
 }
 
 void startEncoder(int pinEncoder1, int pinEncoder2)
 {
   pinMode(pinEncoder1, INPUT_PULLDOWN);
   pinMode(pinEncoder2, INPUT_PULLDOWN);
-  attachInterrupt(digitalPinToInterrupt(pinEncoder1), funcaoInterrupcao1, RISING);
-  attachInterrupt(digitalPinToInterrupt(pinEncoder2), funcaoInterrupcao2, RISING);
+  attachInterrupt(digitalPinToInterrupt(pinEncoder1), funcaoInterrupcao1, CHANGE );
+  attachInterrupt(digitalPinToInterrupt(pinEncoder2), funcaoInterrupcao2, CHANGE );
 }
 
 void updateEncoder()
@@ -108,8 +108,80 @@ int gettotalpulse2()
 {
   return pulseTotalCountEncoder2;
 }
+int getdiferencetotalpulse()
+{
+  int diferenca1 = pulseTotalCountEncoder1 - pulseTotalCountEncoder2;
+  return diferenca1;
+}
 void resettotalpulse()
 {
   pulseTotalCountEncoder1 = 0;
   pulseTotalCountEncoder2 = 0;
+}
+
+// ======================= odometria =======================
+void odometry()
+{
+
+  float xf, yf;
+  float xr, yr;
+
+  float Dx, Dy;
+  Dx = xf - xr;
+  Dy = yf - yr;
+
+  int xr_ant;
+  int yr_ant;
+  int V;
+  float theta;
+  float theta_total;
+  float deltatheta;
+
+  int Dt;
+
+  xr = xr_ant + V * Dt * cos(theta);
+  yr = yr_ant + V * Dt * sin(theta);
+
+  xr_ant = xr;
+  yr_ant = yr;
+  theta_total = theta + deltatheta;
+}
+
+float ssa= 0;
+float deltaS(int pulse1, int pulse2); // prototipo da funcao deltaS
+
+/**
+ * Calcula a distância percorrida com base nos valores de pulso de dois encoders.
+ * 
+ * @param pulse1 O valor de pulso do primeiro encoder.
+ * @param pulse2 O valor de pulso do segundo encoder.
+ * @return A distância percorrida.
+ */
+float s(int pulse1, int pulse2){ 
+
+float a = deltaS(pulse1, pulse2);
+
+return ssa += a;
+}
+
+float deltaS(int pulse1, int pulse2)
+{
+  
+  const float pi = 3.14159265359;
+  const int rev = 1265; // numero de pulsos por revolucao do encoder(Obtido experimentalmente)
+  const int b = 0.15;   // distancia entre as rodas
+
+  const float circ = 0.207; // circunferencia aproximada em metro da roda (Obtido experimentalmente)
+  float raio = circ / (2 * pi); // raio da roda
+
+  float deltathetaa = (2 * pi * pulse1) / rev;        // variacao no angulo de rotacao da roda a
+  float deltathetab = (2 * pi * pulse2) / rev;        // variacao no angulo de rotacao da roda b
+  float deltatheta = (deltathetaa - deltathetab) / b; // variacao no angulo de rotacao do robo
+
+  float deltaSa = raio * deltathetaa; // variacao na distancia percorrida pela roda a
+  float deltaSb = raio * deltathetab; // variacao na distancia percorrida pela roda b
+
+  float deltaS = (deltaSa + deltaSb) / 2; // variacao na distancia percorrida pelo robo
+
+  return deltaS;
 }

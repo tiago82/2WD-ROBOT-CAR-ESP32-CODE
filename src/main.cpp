@@ -7,7 +7,6 @@
 #include "MotorDriver.h"
 #include "SetPID_EspNow.h"
 
-
 // Shift + Alt + F format code
 
 // Variáveis globais
@@ -49,7 +48,8 @@ void StopMotor()
   move = false;
   setpid2.sendData("Funcao parar ");
   setpid2.sendData("kp: " + String(dualPID::kp2) + "," + " ki: " + String(dualPID::ki2) + "," + " kd: " + String(dualPID::kd2) + "," + " setpoint: " + String(dualPID::setpoint));
-  motor.setSpeed(0, 0);
+  motor.stop();
+  resettotalpulse();
 }
 
 void gravarEPROM()
@@ -74,7 +74,11 @@ void printEspNow()
     motor.setSpeed(dualpid.getOutput1(), dualpid.getOutput2());
   }
 
-  setpid2.sendData("input2:" + String(dualpid.getInput2()) + "," + "output2:" + String(dualpid.getOutput2()) + "," + "setpoint:" + String(dualPID::setpoint));
+  // setpid2.sendData("input2:" + String(dualpid.getInput2()) + "," + "output2:" + String(dualpid.getOutput2()) + "," + "setpoint:" + String(dualPID::setpoint)); // exibe o valor do sensor
+  setpid2.sendData(String(gettotalpulse1()) + "," + String(gettotalpulse2())); // exibe o total de pulsos
+  // setpid2.sendData(String(getdiferencetotalpulse())); // exibe o diferença de pulsos entre motores
+  // setpid2.sendData(String(s(getpulse1(), getpulse2()))); // exibe distancia percorrida
+
   dualPID::ki2 = kp2;
   dualPID::ki2 = ki2;
   dualPID::kd2 = kd2;
@@ -134,4 +138,15 @@ void loop()
   dualPID::ki1 = ki2;
   dualPID::kd1 = kd2;
   dualPID::setpoint = setpoint;
+
+  //   if (s(getpulse1(), getpulse2()) >= 0.2)
+  // {
+  //   StopMotor();
+  // }
+
+  if (gettotalpulse1() >= 1*1265 )
+  {
+    setpid2.sendData("total " + String(gettotalpulse1()));
+    StopMotor();
+  }
 }
