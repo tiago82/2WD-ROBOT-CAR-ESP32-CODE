@@ -71,7 +71,7 @@ void printEspNow()
   if (OUTPUT_ != dualpid.getOutput2())
   {
     OUTPUT_ = dualpid.getOutput2();
-    motor.setSpeed(dualpid.getOutput1(), dualpid.getOutput2());
+    motor.setSpeed(dualpid.getOutput1(), -dualpid.getOutput2());
   }
 
   // setpid2.sendData("input2:" + String(dualpid.getInput2()) + "," + "output2:" + String(dualpid.getOutput2()) + "," + "setpoint:" + String(dualPID::setpoint)); // exibe o valor do sensor
@@ -144,7 +144,7 @@ void loop()
   //   StopMotor();
   // }
 
-  if (gettotalpulse1() >= 1*1265 )
+  if (gettotalpulse1() >= girarroborGraus(180) )
   {
     setpid2.sendData("total " + String(gettotalpulse1()));
     StopMotor();

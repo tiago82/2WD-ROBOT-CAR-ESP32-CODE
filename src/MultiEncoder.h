@@ -30,15 +30,15 @@ void ICACHE_RAM_ATTR funcaoInterrupcao2()
 void startEncoder(int pinEncoder1)
 {
   pinMode(pinEncoder1, INPUT_PULLDOWN);
-  attachInterrupt(digitalPinToInterrupt(pinEncoder1), funcaoInterrupcao1, CHANGE );
+  attachInterrupt(digitalPinToInterrupt(pinEncoder1), funcaoInterrupcao1, CHANGE);
 }
 
 void startEncoder(int pinEncoder1, int pinEncoder2)
 {
   pinMode(pinEncoder1, INPUT_PULLDOWN);
   pinMode(pinEncoder2, INPUT_PULLDOWN);
-  attachInterrupt(digitalPinToInterrupt(pinEncoder1), funcaoInterrupcao1, CHANGE );
-  attachInterrupt(digitalPinToInterrupt(pinEncoder2), funcaoInterrupcao2, CHANGE );
+  attachInterrupt(digitalPinToInterrupt(pinEncoder1), funcaoInterrupcao1, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(pinEncoder2), funcaoInterrupcao2, CHANGE);
 }
 
 void updateEncoder()
@@ -147,36 +147,37 @@ void odometry()
   theta_total = theta + deltatheta;
 }
 
-float ssa= 0;
+float ssa = 0;
 float deltaS(int pulse1, int pulse2); // prototipo da funcao deltaS
 
 /**
  * Calcula a distância percorrida com base nos valores de pulso de dois encoders.
- * 
+ *
  * @param pulse1 O valor de pulso do primeiro encoder.
  * @param pulse2 O valor de pulso do segundo encoder.
  * @return A distância percorrida.
  */
-float s(int pulse1, int pulse2){ 
+float s(int pulse1, int pulse2)
+{
 
-float a = deltaS(pulse1, pulse2);
+  float a = deltaS(pulse1, pulse2);
 
-return ssa += a;
+  return ssa += a;
 }
+
+const float pi = 3.14159265359;
+const int rev = 1265;     // numero de pulsos por revolucao do encoder(Obtido experimentalmente)
+const int L = 0.15;       // distancia entre as rodas
+const float circ = 0.207; // circunferencia aproximada em metro da roda (Obtido experimentalmente)
 
 float deltaS(int pulse1, int pulse2)
 {
-  
-  const float pi = 3.14159265359;
-  const int rev = 1265; // numero de pulsos por revolucao do encoder(Obtido experimentalmente)
-  const int b = 0.15;   // distancia entre as rodas
 
-  const float circ = 0.207; // circunferencia aproximada em metro da roda (Obtido experimentalmente)
   float raio = circ / (2 * pi); // raio da roda
 
   float deltathetaa = (2 * pi * pulse1) / rev;        // variacao no angulo de rotacao da roda a
   float deltathetab = (2 * pi * pulse2) / rev;        // variacao no angulo de rotacao da roda b
-  float deltatheta = (deltathetaa - deltathetab) / b; // variacao no angulo de rotacao do robo
+  float deltatheta = (deltathetaa - deltathetab) / L; // variacao no angulo de rotacao do robo
 
   float deltaSa = raio * deltathetaa; // variacao na distancia percorrida pela roda a
   float deltaSb = raio * deltathetab; // variacao na distancia percorrida pela roda b
@@ -184,4 +185,64 @@ float deltaS(int pulse1, int pulse2)
   float deltaS = (deltaSa + deltaSb) / 2; // variacao na distancia percorrida pelo robo
 
   return deltaS;
+}
+
+void rotate()
+{
+
+  float diamrot = L * pi * 2; // diametro da roda de rotacao
+}
+
+/**
+ * Calcula o número de pulsos necessários para mover o robô por uma determinada distância.
+ * 
+ * @param distancia A distância em metros que o robô deve percorrer.
+ * @return O número de pulsos necessários para mover o robô pela distância especificada.
+ */
+int moverrobotdistancia(float distancia) // em metros
+{
+  int npulsos = (distancia * rev) / (circ); 
+  return npulsos;
+}
+
+/**
+ * Calcula o número de pulsos necessários para uma determinada quantidade de revoluções.
+ * 
+ * @param quantidadederev A quantidade de revoluções desejada. // Documentação para o parâmetro "quantidadederev"
+ * @return O número de pulsos necessários.
+ */
+int revolucoesdasrodas(int quantidadederev) // em metros
+{
+  int npulsos = rev*quantidadederev;
+
+  return npulsos;
+}
+
+/**
+ * Calcula o número de rotações necessárias para percorrer uma determinada distância com base na largura do robô.
+ * 
+ * @param larguraRobo A largura do robô em unidades de medida.
+ * @return O número de rotações necessárias para percorrer a distância especificada.
+ */
+// float calcularRotações(float larguraRobo) {
+//     // A circunferência de uma rotação é 2 * pi
+//     float circunferenciaRotacao = 2 * pi;
+
+//     // Calcular o número de rotações com base na largura do robô
+//     float numRotações = circunferenciaRotacao / larguraRobo;
+
+//     return numRotações;
+// }
+
+int girarroborGraus(int graus) {
+  float larguraRobo = L;  // Largura do robô em metros
+  float raioRodas = circ / (2 * pi);;    // Raio das rodas em metros
+  int pulsosPorRevolucao = rev;
+
+  // Calcule a quantidade de pulsos necessários para girar a quantidade desejada de graus
+  float distanciaEntreRodas = larguraRobo;  // Distância entre as rodas
+  float circunferenciaTrajetoria = PI * distanciaEntreRodas * graus / 360.0;  // Circunferência da trajetória
+  int pulsosParaGirar = static_cast<int>((circunferenciaTrajetoria / (2 * PI * raioRodas)) * pulsosPorRevolucao);
+
+  return pulsosParaGirar;
 }
