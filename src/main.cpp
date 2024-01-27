@@ -27,7 +27,11 @@ bool frente = true;
 bool gira = false;
 
 // Endereço MAC do segundo ESP32
-uint8_t macAddress2Esp32[] = {0xA8, 0x42, 0xE3, 0xCB, 0x82, 0xEC};
+//uint8_t macAddress2Esp32[] = {0xA8, 0x42, 0xE3, 0xCB, 0x82, 0xEC};
+uint8_t macAddress2Esp32[] = {0xB8, 0xD6, 0x1A, 0x47, 0x62, 0x8C}; //tiago ESP32 38 PIN
+
+
+
 
 // Instâncias de classes
 dualPID dualpid;
@@ -77,7 +81,7 @@ void printEspNow()
     OUTPUT_ = dualpid.getOutput2();
     if (frente)
     {
-      motor.setSpeed(300, 300);
+      motor.setSpeed(dualpid.getOutput1(), dualpid.getOutput2());
     }
     if (gira)
     {
