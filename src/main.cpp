@@ -22,16 +22,13 @@ const char *KI_KEY = "ki";
 const char *KD_KEY = "kd";
 const char *SETPOINT_KEY = "setpoint";
 
-//estados
+// estados
 bool frente = true;
 bool gira = false;
 
 // Endereço MAC do segundo ESP32
-//uint8_t macAddress2Esp32[] = {0xA8, 0x42, 0xE3, 0xCB, 0x82, 0xEC};
-uint8_t macAddress2Esp32[] = {0xB8, 0xD6, 0x1A, 0x47, 0x62, 0x8C}; //tiago ESP32 38 PIN
-
-
-
+// uint8_t macAddress2Esp32[] = {0xA8, 0x42, 0xE3, 0xCB, 0x82, 0xEC};
+uint8_t macAddress2Esp32[] = {0xB8, 0xD6, 0x1A, 0x47, 0x62, 0x8C}; // tiago ESP32 38 PIN
 
 // Instâncias de classes
 dualPID dualpid;
@@ -74,27 +71,40 @@ void gravarEPROM()
 
 void printEspNow()
 {
-  dualpid.updatePID(getpulse1(), getpulse2());
+  dualpid.updatePID(getpulse1()*0.99, getpulse2());
+
+  int out1 = dualpid.getOutput1();
+  int out2 = dualpid.getOutput2();
+  int pulse1 = getpulse1();
+  int pulse2 = getpulse2();
+
+  if (getdiferencetotalpulse() > 0) // menor que zero - vira direita
+  {
+    out2 = dualpid.getOutput2() - 0.05*dualpid.getOutput2(); // reduz motor 2 para evitar virar esquerda
+  }
+  if (getdiferencetotalpulse() < 0) // maior que zero
+  {
+    out2 = dualpid.getOutput1() - 0.05*dualpid.getOutput1() ;
+  }
 
   if (OUTPUT_ != dualpid.getOutput2())
   {
     OUTPUT_ = dualpid.getOutput2();
     if (frente)
     {
-      motor.setSpeed(dualpid.getOutput1(), dualpid.getOutput2());
+      motor.setSpeed(out1, out2);
     }
-    if (gira)
-    {
-      motor.setSpeed(-dualpid.getOutput1(), -dualpid.getOutput2());
-    }
-    
+    // if (gira)
+    // {
+    //   motor.setSpeed(-dualpid.getOutput1(), -dualpid.getOutput2());
+    // }
   }
 
   // setpid2.sendData("input2:" + String(dualpid.getInput2()) + "," + "output2:" + String(dualpid.getOutput2()) + "," + "setpoint:" + String(dualPID::setpoint)); // exibe o valor do sensor
-  //setpid2.sendData(String(gettotalpulse1()) + "," + String(gettotalpulse2())); // exibe o total de pulsos
+  // setpid2.sendData(String(gettotalpulse1()) + "," + String(gettotalpulse2())); // exibe o total de pulsos
   setpid2.sendData(String(getdiferencetotalpulse())); // exibe o diferença de pulsos entre motores
   // setpid2.sendData(String(s(getpulse1(), getpulse2()))); // exibe distancia percorrida
-  //setpid2.sendData("quantidade para a rotacao" + String(girarroborGraus(180)));
+  // setpid2.sendData("quantidade para a rotacao" + String(girarroborGraus(180)));
 
   dualPID::ki2 = kp2;
   dualPID::ki2 = ki2;
@@ -137,8 +147,6 @@ void setup()
   MyDerivedClass::setpoint = setpoint;
 }
 
-
-
 void loop()
 {
   RFID::checkRFIDPresent(mfrc522);
@@ -163,28 +171,28 @@ void loop()
   //   StopMotor();
   // }
 
-  if(frente)
+  if (frente)
   {
-    if (gettotalpulse1() >= moverpordistancia(0.8))
+    if (gettotalpulse1() >= moverpordistancia(1))
     {
-      frente = false;
+      // frente = false;
       setpid2.sendData("total " + String(gettotalpulse1()));
       StopMotor();
+      
       gira = true;
       delay(500);
-      startMotor();
+      // startMotor();
     }
   }
-  if(gira)
-  {
-    if (gettotalpulse1() >= moverpordistancia(0.8))
-    {
-      frente = true;
-      gira = false;
-      setpid2.sendData("total " + String(gettotalpulse1()));
-      StopMotor();
-      delay(500);
-      
-    }
-  }
+  // if (gira)
+  // {
+  //   if (gettotalpulse1() >= moverpordistancia(0.8))
+  //   {
+  //     frente = true;
+  //     gira = false;
+  //     setpid2.sendData("total " + String(gettotalpulse1()));
+  //     StopMotor();
+  //     delay(500);
+  //   }
+  // }
 }
