@@ -52,7 +52,8 @@ void StopMotor()
   dualpid.deinit();
   move = false;
   setpid2.sendData("Funcao parar ");
-  setpid2.sendData("kpa: " + String(kp1) + " kpb: " + String(kp2) + "," + " kia: " + String(ki1) + " kib: " + String(ki2) + "," + " kda: " + String(kd1) + " kdb: " + String(kd2) + "," + " setpoint: " + String(setpoint));  motor.stop();
+  setpid2.sendData("kpa: " + String(kp1) + " kia: " + String(ki1) + " kda: " + String(kd1) + " | " + " kpb: " + String(kp2) + " kib: " + String(ki2) + " kdb: " + String(kd2) + " | " + " setpoint: " + String(setpoint));
+  motor.stop();
   resettotalpulse();
 }
 
@@ -67,8 +68,10 @@ void gravarEPROM()
   preferences.putDouble(KD_KEY, kd2);
   preferences.putDouble(SETPOINT_KEY, setpoint);
   preferences.end();
+  preferences.begin("myApp", false);
   setpid2.sendData("Constantes gravadas na EEPROM");
-  setpid2.sendData(String(kp1) + "," + String(ki1) + "," + String(kd1) + " | " +String(kp2) + "," + String(ki2) + "," + String(kd2) + "," + String(setpoint));
+  setpid2.sendData(String(kp1) + "," + String(ki1) + "," + String(kd1) + " | " + String(kp2) + "," + String(ki2) + "," + String(kd2) + "," + String(setpoint));
+  preferences.end();
 }
 
 void printEspNow()
@@ -136,7 +139,8 @@ void setup()
   preferences.end();
 
   setpid2.init();
-  setpid2.sendData("kpa: " + String(kp1) + " kpb: " + String(kp2) + "," + " kia: " + String(ki1) + " kib: " + String(ki2) + "," + " kda: " + String(kd1) + " kdb: " + String(kd2) + "," + " setpoint: " + String(setpoint));  motor.stop();
+  setpid2.sendData("kpa: " + String(kp1) + " kia: " + String(ki1) + " kda: " + String(kd1) + " | " + " kpb: " + String(kp2) + " kib: " + String(ki2) + " kdb: " + String(kd2) + " | " + " setpoint: " + String(setpoint));
+  motor.stop();
 
   analogWriteResolution(10);
   startEncoder(M1_S2, M2_S1);
