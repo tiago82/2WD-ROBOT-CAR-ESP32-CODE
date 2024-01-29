@@ -19,7 +19,8 @@ public:
   static uint8_t *macAddress2Esp32;
 
   MyDerivedClass(uint8_t *macAddress);
-  static double kp, kd, ki, setpoint;
+  static double kp1, kd1, ki1, setpoint;
+  static double kp2, kd2, ki2;
   static DataStruct dataSend;
   static DataStruct dataRecv;
 
@@ -39,9 +40,12 @@ uint8_t *MyDerivedClass::macAddress2Esp32; //  inicializando esse ponteiro está
 DataStruct MyDerivedClass::dataRecv;
 DataStruct MyDerivedClass::dataSend;
 
-double MyDerivedClass::kp;
-double MyDerivedClass::ki;
-double MyDerivedClass::kd;
+double MyDerivedClass::kp1;
+double MyDerivedClass::ki1;
+double MyDerivedClass::kd1;
+double MyDerivedClass::kp2;
+double MyDerivedClass::ki2;
+double MyDerivedClass::kd2;
 double MyDerivedClass::setpoint;
 void startMotor();
 void StopMotor();
@@ -62,27 +66,75 @@ void MyDerivedClass::OnDataRecv(const uint8_t *mac, const uint8_t *incomingData,
 
   input.trim();
 
-  if (input.startsWith("kp"))
+  if (input.startsWith("kpt"))
   {
-    MyDerivedClass::kp = input.substring(2).toFloat();
+    MyDerivedClass::kp1 = input.substring(3).toFloat();
+    MyDerivedClass::kp2 = MyDerivedClass::kp1;
     Serial.print("Novo valor de kp: ");
-    Serial.println(MyDerivedClass::kp);
-    EspNowSerial::sendData("Novo valor de kp: " + String(MyDerivedClass::kp));
+    Serial.println(MyDerivedClass::kp1);
+    EspNowSerial::sendData("Novo valor de kp: " + String(MyDerivedClass::kp1));
   }
-  else if (input.startsWith("ki"))
+  else if (input.startsWith("kit"))
   {
-    MyDerivedClass::ki = input.substring(2).toFloat();
+    MyDerivedClass::ki1 = input.substring(3).toFloat();
+    MyDerivedClass::ki2 = MyDerivedClass::ki1;
     Serial.print("Novo valor de ki: ");
-    Serial.println(MyDerivedClass::ki);
-    EspNowSerial::sendData("Novo valor de ki: " + String(MyDerivedClass::ki));
+    Serial.println(MyDerivedClass::ki1);
+    EspNowSerial::sendData("Novo valor de ki: " + String(MyDerivedClass::ki1));
   }
-  else if (input.startsWith("kd"))
+  else if (input.startsWith("kdt"))
   {
-    MyDerivedClass::kd = input.substring(2).toFloat();
+    MyDerivedClass::kd1 = input.substring(3).toFloat();
+    MyDerivedClass::kd2 = MyDerivedClass::kd1;
     Serial.print("Novo valor de kd: ");
-    Serial.println(MyDerivedClass::kd);
-    EspNowSerial::sendData("Novo valor de kd: " + String(MyDerivedClass::kd));
+    Serial.println(MyDerivedClass::kd1);
+    EspNowSerial::sendData("Novo valor de kd: " + String(MyDerivedClass::kd1));
   }
+
+  if (input.startsWith("kpa"))
+  {
+    MyDerivedClass::kp1 = input.substring(3).toFloat();
+    Serial.print("Novo valor de kpa: ");
+    Serial.println(MyDerivedClass::kp1);
+    EspNowSerial::sendData("Novo valor de kpa: " + String(MyDerivedClass::kp1));
+  }
+  else if (input.startsWith("kia"))
+  {
+    MyDerivedClass::ki1 = input.substring(3).toFloat();
+    Serial.print("Novo valor de kia: ");
+    Serial.println(MyDerivedClass::ki1);
+    EspNowSerial::sendData("Novo valor de kia: " + String(MyDerivedClass::ki1));
+  }
+  else if (input.startsWith("kda"))
+  {
+    MyDerivedClass::kd1 = input.substring(3).toFloat();
+    Serial.print("Novo valor de kda: ");
+    Serial.println(MyDerivedClass::kd1);
+    EspNowSerial::sendData("Novo valor de kda: " + String(MyDerivedClass::kd1));
+  }
+
+  if (input.startsWith("kpb"))
+  {
+    MyDerivedClass::kp2 = input.substring(3).toFloat();
+    Serial.print("Novo valor de kp: ");
+    Serial.println(MyDerivedClass::kp2);
+    EspNowSerial::sendData("Novo valor de kpb: " + String(MyDerivedClass::kp2));
+  }
+  else if (input.startsWith("kib"))
+  {
+    MyDerivedClass::ki2 = input.substring(3).toFloat();
+    Serial.print("Novo valor de ki: ");
+    Serial.println(MyDerivedClass::ki2);
+    EspNowSerial::sendData("Novo valor de kib: " + String(MyDerivedClass::ki2));
+  }
+  else if (input.startsWith("kdb"))
+  {
+    MyDerivedClass::kd2 = input.substring(3).toFloat();
+    Serial.print("Novo valor de kd: ");
+    Serial.println(MyDerivedClass::kd2);
+    EspNowSerial::sendData("Novo valor de kdb: " + String(MyDerivedClass::kd2));
+  }
+
   else if (input.startsWith("se"))
   {
     MyDerivedClass::setpoint = input.substring(2).toFloat();
@@ -106,37 +158,37 @@ void MyDerivedClass::OnDataRecv(const uint8_t *mac, const uint8_t *incomingData,
   {
     gravarEPROM();
   }
-  else
-  {
-    char charArray[input.length() + 1];
-    input.toCharArray(charArray, input.length() + 1);
+  // else
+  // {
+  //   char charArray[input.length() + 1];
+  //   input.toCharArray(charArray, input.length() + 1);
 
-    char *token = strtok(charArray, " ");
+  //   char *token = strtok(charArray, " ");
 
-    if (token != NULL)
-    {
-      MyDerivedClass::kp = atof(token);
-      token = strtok(NULL, " ");
-    }
+  //   if (token != NULL)
+  //   {
+  //     MyDerivedClass::kp1 = atof(token);
+  //     token = strtok(NULL, " ");
+  //   }
 
-    if (token != NULL)
-    {
-      MyDerivedClass::ki = atof(token);
-      token = strtok(NULL, " ");
-    }
+  //   if (token != NULL)
+  //   {
+  //     MyDerivedClass::ki1 = atof(token);
+  //     token = strtok(NULL, " ");
+  //   }
 
-    if (token != NULL)
-    {
-      MyDerivedClass::kd = atof(token);
-    }
+  //   if (token != NULL)
+  //   {
+  //     MyDerivedClass::kd1 = atof(token);
+  //   }
 
-    Serial.print(MyDerivedClass::kp);
-    Serial.print(" ");
-    Serial.print(MyDerivedClass::ki);
-    Serial.print(" ");
-    Serial.println(MyDerivedClass::kd);
-    EspNowSerial::sendData("KP: " + String(MyDerivedClass::kp) + " KI: " + String(MyDerivedClass::ki) + " KD: " + String(MyDerivedClass::kd));
-  }
+  //   Serial.print(MyDerivedClass::kp1);
+  //   Serial.print(" ");
+  //   Serial.print(MyDerivedClass::ki1);
+  //   Serial.print(" ");
+  //   Serial.println(MyDerivedClass::kd1);
+  //   EspNowSerial::sendData("KP: " + String(MyDerivedClass::kp1) + " KI: " + String(MyDerivedClass::ki1) + " KD: " + String(MyDerivedClass::kd1));
+  // }
 }
 
 void MyDerivedClass::init()

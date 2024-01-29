@@ -52,40 +52,42 @@ void StopMotor()
   dualpid.deinit();
   move = false;
   setpid2.sendData("Funcao parar ");
-  setpid2.sendData("kp: " + String(dualPID::kp2) + "," + " ki: " + String(dualPID::ki2) + "," + " kd: " + String(dualPID::kd2) + "," + " setpoint: " + String(dualPID::setpoint));
-  motor.stop();
+  setpid2.sendData("kpa: " + String(kp1) + " kpb: " + String(kp2) + "," + " kia: " + String(ki1) + " kib: " + String(ki2) + "," + " kda: " + String(kd1) + " kdb: " + String(kd2) + "," + " setpoint: " + String(setpoint));  motor.stop();
   resettotalpulse();
 }
 
 void gravarEPROM()
 {
   preferences.begin("myApp", false);
+  preferences.putDouble(KP_KEY, kp1);
+  preferences.putDouble(KI_KEY, ki1);
+  preferences.putDouble(KD_KEY, kd1);
   preferences.putDouble(KP_KEY, kp2);
   preferences.putDouble(KI_KEY, ki2);
   preferences.putDouble(KD_KEY, kd2);
   preferences.putDouble(SETPOINT_KEY, setpoint);
   preferences.end();
   setpid2.sendData("Constantes gravadas na EEPROM");
-  setpid2.sendData(String(kp2) + "," + String(ki2) + "," + String(kd2) + "," + String(setpoint));
+  setpid2.sendData(String(kp1) + "," + String(ki1) + "," + String(kd1) + " | " +String(kp2) + "," + String(ki2) + "," + String(kd2) + "," + String(setpoint));
 }
 
 void printEspNow()
 {
-  dualpid.updatePID(getpulse1()*0.99, getpulse2());
+  dualpid.updatePID(getpulse1() * 1, getpulse2());
 
   int out1 = dualpid.getOutput1();
   int out2 = dualpid.getOutput2();
   int pulse1 = getpulse1();
   int pulse2 = getpulse2();
 
-  if (getdiferencetotalpulse() > 0) // menor que zero - vira direita
-  {
-    out2 = dualpid.getOutput2() - 0.05*dualpid.getOutput2(); // reduz motor 2 para evitar virar esquerda
-  }
-  if (getdiferencetotalpulse() < 0) // maior que zero
-  {
-    out2 = dualpid.getOutput1() - 0.05*dualpid.getOutput1() ;
-  }
+  // if (getdiferencetotalpulse() > 0) // menor que zero - vira direita
+  // {
+  //   out2 = dualpid.getOutput2() - 0.05*dualpid.getOutput2(); // reduz motor 2 para evitar virar esquerda
+  // }
+  // if (getdiferencetotalpulse() < 0) // maior que zero
+  // {
+  //   out2 = dualpid.getOutput1() - 0.05*dualpid.getOutput1() ;
+  // }
 
   if (OUTPUT_ != dualpid.getOutput2())
   {
@@ -100,9 +102,9 @@ void printEspNow()
     // }
   }
 
-  // setpid2.sendData("input2:" + String(dualpid.getInput2()) + "," + "output2:" + String(dualpid.getOutput2()) + "," + "setpoint:" + String(dualPID::setpoint)); // exibe o valor do sensor
+  setpid2.sendData("input1:" + String(dualpid.getInput1()) + ", " + "output1:" + String(dualpid.getOutput1()) + ", " + "input2:" + String(dualpid.getInput2()) + ", " + "output2:" + String(dualpid.getOutput2()) + ", " + "setpoint:" + String(dualPID::setpoint) + ", " + "diferença_contagem:" + String(getdiferencetotalpulse())); // exibe o valor do sensor
   // setpid2.sendData(String(gettotalpulse1()) + "," + String(gettotalpulse2())); // exibe o total de pulsos
-  setpid2.sendData(String(getdiferencetotalpulse())); // exibe o diferença de pulsos entre motores
+  // setpid2.sendData(String(getdiferencetotalpulse())); // exibe o diferença de pulsos entre motores
   // setpid2.sendData(String(s(getpulse1(), getpulse2()))); // exibe distancia percorrida
   // setpid2.sendData("quantidade para a rotacao" + String(girarroborGraus(180)));
 
@@ -124,6 +126,9 @@ void setup()
   // preferences.clear();
 
   // Read initial values from preferences
+  kp1 = preferences.getDouble(KP_KEY, 0.0);
+  ki1 = preferences.getDouble(KI_KEY, 0.0);
+  kd1 = preferences.getDouble(KD_KEY, 0.0);
   kp2 = preferences.getDouble(KP_KEY, 0.0);
   ki2 = preferences.getDouble(KI_KEY, 0.0);
   kd2 = preferences.getDouble(KD_KEY, 0.0);
@@ -131,7 +136,7 @@ void setup()
   preferences.end();
 
   setpid2.init();
-  setpid2.sendData("kp: " + String(kp2) + "," + " ki: " + String(ki2) + "," + " kd: " + String(kd2) + "," + " setpoint: " + String(setpoint));
+  setpid2.sendData("kpa: " + String(kp1) + " kpb: " + String(kp2) + "," + " kia: " + String(ki1) + " kib: " + String(ki2) + "," + " kda: " + String(kd1) + " kdb: " + String(kd2) + "," + " setpoint: " + String(setpoint));  motor.stop();
 
   analogWriteResolution(10);
   startEncoder(M1_S2, M2_S1);
@@ -141,9 +146,13 @@ void setup()
   // RFID::addCardTwoFunctions( 0x104a4913, myFunction111 ,myFunction2);
   RFID::addCardFunction(0x104a4913, gravarEPROM);
   RFID::addCardTwoFunctions(0x10602403, startMotor, StopMotor);
-  MyDerivedClass::kp = kp2;
-  MyDerivedClass::ki = ki2;
-  MyDerivedClass::kd = kd2;
+
+  MyDerivedClass::kp1 = kp1;
+  MyDerivedClass::ki1 = ki1;
+  MyDerivedClass::kd1 = kd1;
+  MyDerivedClass::kp2 = kp2;
+  MyDerivedClass::ki2 = ki2;
+  MyDerivedClass::kd2 = kd2;
   MyDerivedClass::setpoint = setpoint;
 }
 
@@ -154,16 +163,19 @@ void loop()
   {
     updateEncoder(printEspNow);
   }
-  kp2 = MyDerivedClass::kp;
-  ki2 = MyDerivedClass::ki;
-  kd2 = MyDerivedClass::kd;
+  kp1 = MyDerivedClass::kp1;
+  ki1 = MyDerivedClass::ki1;
+  kd1 = MyDerivedClass::kd1;
+  kp2 = MyDerivedClass::kp2;
+  ki2 = MyDerivedClass::ki2;
+  kd2 = MyDerivedClass::kd2;
   setpoint = MyDerivedClass::setpoint;
   dualPID::kp2 = kp2;
   dualPID::ki2 = ki2;
   dualPID::kd2 = kd2;
-  dualPID::kp1 = kp2;
-  dualPID::ki1 = ki2;
-  dualPID::kd1 = kd2;
+  dualPID::kp1 = kp1;
+  dualPID::ki1 = ki1;
+  dualPID::kd1 = kd1;
   dualPID::setpoint = setpoint;
 
   //   if (s(getpulse1(), getpulse2()) >= 0.2)
@@ -178,7 +190,7 @@ void loop()
       // frente = false;
       setpid2.sendData("total " + String(gettotalpulse1()));
       StopMotor();
-      
+
       gira = true;
       delay(500);
       // startMotor();
