@@ -17,9 +17,12 @@ double kd1, kd2;
 double setpoint;
 
 // Chaves para armazenar valores na Flash
-const char *KP_KEY = "kp";
-const char *KI_KEY = "ki";
-const char *KD_KEY = "kd";
+const char *KP1_KEY = "kp1";
+const char *KI1_KEY = "ki1";
+const char *KD1_KEY = "kd1";
+const char *KP2_KEY = "kp2";
+const char *KI2_KEY = "ki2";
+const char *KD2_KEY = "kd2";
 const char *SETPOINT_KEY = "setpoint";
 
 // estados
@@ -60,12 +63,12 @@ void StopMotor()
 void gravarEPROM()
 {
   preferences.begin("myApp", false);
-  preferences.putDouble(KP_KEY, kp1);
-  preferences.putDouble(KI_KEY, ki1);
-  preferences.putDouble(KD_KEY, kd1);
-  preferences.putDouble(KP_KEY, kp2);
-  preferences.putDouble(KI_KEY, ki2);
-  preferences.putDouble(KD_KEY, kd2);
+  preferences.putDouble(KP1_KEY, kp1);
+  preferences.putDouble(KI1_KEY, ki1);
+  preferences.putDouble(KD1_KEY, kd1);
+  preferences.putDouble(KP2_KEY, kp2);
+  preferences.putDouble(KI2_KEY, ki2);
+  preferences.putDouble(KD2_KEY, kd2);
   preferences.putDouble(SETPOINT_KEY, setpoint);
   preferences.end();
   preferences.begin("myApp", false);
@@ -97,7 +100,7 @@ void printEspNow()
     OUTPUT_ = dualpid.getOutput2();
     if (frente)
     {
-      motor.setSpeed(out1, out2);
+       motor.setSpeed(out1, out2);
     }
     // if (gira)
     // {
@@ -129,12 +132,12 @@ void setup()
   // preferences.clear();
 
   // Read initial values from preferences
-  kp1 = preferences.getDouble(KP_KEY, 0.0);
-  ki1 = preferences.getDouble(KI_KEY, 0.0);
-  kd1 = preferences.getDouble(KD_KEY, 0.0);
-  kp2 = preferences.getDouble(KP_KEY, 0.0);
-  ki2 = preferences.getDouble(KI_KEY, 0.0);
-  kd2 = preferences.getDouble(KD_KEY, 0.0);
+  kp1 = preferences.getDouble(KP1_KEY, 0.0);
+  ki1 = preferences.getDouble(KI1_KEY, 0.0);
+  kd1 = preferences.getDouble(KD1_KEY, 0.0);
+  kp2 = preferences.getDouble(KP2_KEY, 0.0);
+  ki2 = preferences.getDouble(KI2_KEY, 0.0);
+  kd2 = preferences.getDouble(KD2_KEY, 0.0);
   setpoint = preferences.getDouble(SETPOINT_KEY, 0.0);
   preferences.end();
 
@@ -192,7 +195,7 @@ void loop()
     if (gettotalpulse1() >= moverpordistancia(1))
     {
       // frente = false;
-      setpid2.sendData("total " + String(gettotalpulse1()));
+      setpid2.sendData("totalpulsos1=" + String(gettotalpulse1())+" totalpulsos2=" + String(gettotalpulse2()));
       StopMotor();
 
       gira = true;
