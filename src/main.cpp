@@ -6,6 +6,7 @@
 #include "rfid_functions.h"
 #include "MotorDriver.h"
 #include "SetPID_EspNow.h"
+#include "bt.h"
 
 // Shift + Alt + F format code
 
@@ -158,6 +159,8 @@ void setup()
   RFID::addCardFunction(0x104a4913, gravarEPROM);
   RFID::addCardTwoFunctions(0x10602403, startMotor, StopMotor);
 
+  btsetup();
+
   MyDerivedClass::kp1 = kp1;
   MyDerivedClass::ki1 = ki1;
   MyDerivedClass::kd1 = kd1;
@@ -170,6 +173,9 @@ void setup()
 
 void loop()
 {
+
+  btloop();
+
   RFID::checkRFIDPresent(mfrc522);
   if (move)
   {
@@ -182,7 +188,7 @@ void loop()
   ki2 = MyDerivedClass::ki2;
   kd2 = MyDerivedClass::kd2;
   setpoint1 = MyDerivedClass::setpoint1;
-    setpoint2 = MyDerivedClass::setpoint2;
+  setpoint2 = MyDerivedClass::setpoint2;
   dualPID::kp2 = kp2;
   dualPID::ki2 = ki2;
   dualPID::kd2 = kd2;
@@ -197,19 +203,19 @@ void loop()
   //   StopMotor();
   // }
 
-  if (frente)
-  {
-    if (gettotalpulse1() >= 2000) // mudei contagem encoder logo edometria falta consetar
-    {
-      // frente = false;
-      setpid2.sendData("totalpulsos1=" + String(gettotalpulse1()) + " totalpulsos2=" + String(gettotalpulse2()));
-      StopMotor();
+  // if (frente)
+  // {
+  //   if (gettotalpulse1() >= 2000) // mudei contagem encoder logo edometria falta consetar
+  //   {
+  //     // frente = false;
+  //     setpid2.sendData("totalpulsos1=" + String(gettotalpulse1()) + " totalpulsos2=" + String(gettotalpulse2()));
+  //     StopMotor();
 
-      gira = true;
-      delay(500);
-      // startMotor();
-    }
-  }
+  //     gira = true;
+  //     delay(500);
+  //     // startMotor();
+  //   }
+  // }
   // if (gira)
   // {
   //   if (gettotalpulse1() >= moverpordistancia(0.8))
