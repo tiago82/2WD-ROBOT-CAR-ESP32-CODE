@@ -1,3 +1,11 @@
+/**
+ * @file MotorDriver.cpp
+ * @brief Implementação da classe MotorDriver que controla os motores de um carro robô de 2 rodas.
+ * 
+ * Esta classe define os métodos para controlar a velocidade e direção dos motores do carro robô.
+ * Os pinos de controle dos motores são configurados no construtor e os métodos fornecem funcionalidades
+ * para mover o carro para frente, para trás, parar e definir velocidades específicas.
+ */
 #include "MotorDriver.h"
 
 MotorDriver::MotorDriver(int enA_left, int in1_left, int in2_left, int enA_right, int in1_right, int in2_right)
