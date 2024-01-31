@@ -1,3 +1,12 @@
+/*
+  *  Autor: Tiago
+  *  Data: 01/01/2024
+  *  Objetivo: Controle de robô com 2 motores DC com controle de velocidade e PID
+  *  Plataforma: ESP32
+  *  IDE: PlatformIO
+  *  Bibliotecas:
+*/
+
 #include <Arduino.h>
 #include <Preferences.h>
 #include "MultiEncoder.h"
@@ -33,7 +42,7 @@ bool tras = false;
 bool viraE = false;
 bool viraD = false;
 
-// Endereço MAC do segundo ESP32
+// Endereço MAC do segundo ESP32 para comunicação via ESP-NOW
 // uint8_t macAddress2Esp32[] = {0xA8, 0x42, 0xE3, 0xCB, 0x82, 0xEC};
 uint8_t macAddress2Esp32[] = {0xB8, 0xD6, 0x1A, 0x47, 0x62, 0x8C}; // tiago ESP32 38 PIN
 
@@ -175,7 +184,7 @@ void printEspNow()
   dualPID::setpoint2 = setpoint2;
 }
 
-//=============== Main ==================
+//======================== Setup ========================
 void setup()
 {
 
@@ -219,6 +228,7 @@ void setup()
   MyDerivedClass::setpoint2 = setpoint2;
 }
 
+//======================== Loop ========================
 void loop()
 {
 

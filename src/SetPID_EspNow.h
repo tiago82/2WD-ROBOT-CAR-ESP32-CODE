@@ -3,7 +3,7 @@
   Esta classe é derivada da classe base EspNowSerial e possui funcionalidades adicionais para lidar com a comunicação ESP-NOW
   e a seleção das variáveis PID.
 
-  Ela pega a classe principal que só se comunica e implementa a seleção de PID
+  Ela pega a classe principal que só se comunica e implementa um tratamento para seleção de PID por recebimento de mensagens via ESP-NOW.
 
 */
 
@@ -141,14 +141,14 @@ void MyDerivedClass::OnDataRecv(const uint8_t *mac, const uint8_t *incomingData,
     MyDerivedClass::setpoint1 = input.substring(3).toFloat();
     MyDerivedClass::setpoint2 = MyDerivedClass::setpoint1;
 
-    Serial.print("Novo valor de setpoint: ");
+    Serial.print("Novo valor de sea: ");
     Serial.println(MyDerivedClass::setpoint1);
     EspNowSerial::sendData("Novo valor de setpoint: " + String(MyDerivedClass::setpoint1));
   }
   else if (input.startsWith("sea"))
   {
     MyDerivedClass::setpoint1 = input.substring(3).toFloat();
-    Serial.print("Novo valor de setpoint: ");
+    Serial.print("Novo valor de seb: ");
     Serial.println(MyDerivedClass::setpoint1);
     EspNowSerial::sendData("Novo valor de setpoint: " + String(MyDerivedClass::setpoint1));
   }

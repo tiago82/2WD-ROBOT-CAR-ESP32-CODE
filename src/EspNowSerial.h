@@ -1,8 +1,16 @@
 /*
 
-  Código de Teste para Comunicação ESP-NOW usando Classe.
+  EspNowSerial.h
 
-  Este código é destinado ao teste de comunicação via ESP-NOW, projetado para ser usado com a subclasse SetPID_EspNow.h.
+  Esta biblioteca implementa a comunicação via ESP-NOW utilizando a classe EspNowSerial. 
+  É projetada para ser usada em conjunto com a subclasse SetPID_EspNow.h que trata os dados recebidos e ajusta o PID.
+
+  A classe EspNowSerial permite a comunicação bidirecional entre dois dispositivos ESP32 
+  usando o protocolo ESP-NOW. Ela fornece métodos para inicializar a comunicação, enviar e 
+  receber dados.
+
+  A classe EspNowSerial herda da classe Print, permitindo que os dados sejam enviados para 
+  a porta serial usando os métodos write().
 
 */
 

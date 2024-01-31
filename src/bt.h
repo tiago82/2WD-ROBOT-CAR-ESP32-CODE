@@ -1,3 +1,19 @@
+/*
+    Este arquivo contém a implementação de funções relacionadas à comunicação Bluetooth
+    para controlar um robô de carro de duas rodas usando um ESP32.
+
+    As principais funções incluídas neste arquivo são:
+    - startMotor(): Inicia o movimento do robô para frente.
+    - StopMotor(): Para o movimento do robô.
+    - re(): Move o robô para trás.
+    - viraEsquerda(): Move o robô para a esquerda.
+    - viraDireita(): Move o robô para a direita.
+    - processCommand(char command): Processa o comando recebido via Bluetooth e executa a ação correspondente.
+    - btsetup(): Configura a comunicação Bluetooth.
+    - btloop(): Verifica se há dados disponíveis na conexão Bluetooth e processa os comandos recebidos.
+
+*/
+
 #include <BluetoothSerial.h>
 
 BluetoothSerial SerialBT;

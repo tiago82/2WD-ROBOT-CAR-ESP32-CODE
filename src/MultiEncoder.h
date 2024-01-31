@@ -1,3 +1,16 @@
+/**
+ * @file MultiEncoder.h
+ * @brief Este arquivo contém a implementação de funções relacionadas a encoders e odometria para um robô de duas rodas.
+ * 
+ * As funções neste arquivo permitem a contagem de pulsos de dois encoders, o cálculo da distância percorrida pelo robô,
+ * o cálculo do deslocamento angular das rodas do robô, entre outras funcionalidades relacionadas à movimentação do robô.
+ * 
+ * Este código é parte de um projeto desenvolvido no ambiente PlatformIO para um robô de duas rodas controlado por um ESP32.
+ * 
+ * @note Este código foi desenvolvido para fins educacionais e pode ser adaptado para diferentes plataformas e configurações de hardware.
+ */
+
+
 #pragma once
 #include <Arduino.h>
 

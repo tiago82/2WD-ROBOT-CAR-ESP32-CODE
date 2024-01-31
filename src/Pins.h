@@ -1,3 +1,8 @@
+/*
+    Este arquivo contém as definições dos pinos utilizados no projeto do  robô 2wd com ESP32.
+    Aqui estão definidos os pinos para os motores, encoders, RFID, NRF24, LED e sonar.
+*/
+
 #ifndef PINS_H
 #define PINS_H
 

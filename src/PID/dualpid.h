@@ -1,3 +1,12 @@
+
+/**
+ * @file dualpid.h
+ * @brief Este arquivo contém a definição da classe dualPID, que implementa um controlador PID duplo.
+ * 
+ * A classe dualPID é responsável por controlar dois sistemas independentes utilizando controladores PID.
+ * Ela fornece métodos para inicialização, atualização dos controladores, definição de setpoints e obtenção de valores de entrada e saída.
+ * Os controladores podem ser configurados para operar de forma individual (SinglePID) ou em conjunto (dualPID).
+ */
 #pragma once
 #include <PID_v1.h>
 

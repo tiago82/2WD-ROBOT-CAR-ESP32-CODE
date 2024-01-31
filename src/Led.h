@@ -1,3 +1,13 @@
+/**
+ *  Led.h
+ *  Biblioteca para controlar um LED em um robô de carro de 2 rodas.
+ * 
+ * Esta biblioteca fornece funções para configurar e controlar um LED em um robô de carro de 2 rodas.
+ * Ela permite acender o LED, fazer o LED piscar um número específico de vezes e controlar o LED em um loop contínuo.
+ * 
+ *  Esta biblioteca depende da biblioteca Pins.h onde estao definidos os pinos do LED.
+ */
+
 #ifndef LED_H
 #define LED_H
 
