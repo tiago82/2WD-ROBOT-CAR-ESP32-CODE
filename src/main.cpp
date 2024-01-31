@@ -11,7 +11,6 @@
 // Shift + Alt + F format code
 
 // Variáveis globais
-bool move = false;
 double kp1, kp2;
 double ki1, ki2;
 double kd1, kd2;
@@ -28,8 +27,11 @@ const char *SETPOINT1_KEY = "setpoint1";
 const char *SETPOINT2_KEY = "setpoint2";
 
 // estados
-bool frente = true;
-bool gira = false;
+bool move = false;
+bool frente = false;
+bool tras = false;
+bool viraE = false;
+bool viraD = false;
 
 // Endereço MAC do segundo ESP32
 // uint8_t macAddress2Esp32[] = {0xA8, 0x42, 0xE3, 0xCB, 0x82, 0xEC};
@@ -50,12 +52,50 @@ void startMotor()
   // move = !move;
   dualpid.init();
   move = true;
+  frente = true;
+  tras = false;
+  viraE = false;
+  viraD = false;
+}
+
+void re()
+{
+  // motor.moveForward(move ? 0 : 300);  // Operador ternário (? :) Se move for verdadeiro, escolhemos 0 (parar o motor). Se move for falso, escolhemos 300.
+  // move = !move;
+  dualpid.init();
+  move = true;
+  frente = false;
+  tras = true;
+  viraE = false;
+  viraD = false;
+}
+void viraDireita()
+{
+  dualpid.init();
+  move = true;
+  frente = false;
+  tras = false;
+  viraE = false;
+  viraD = true;
+}
+void viraEsquerda()
+{
+  dualpid.init();
+  move = true;
+  frente = false;
+  tras = false;
+  viraE = true;
+  viraD = false;
 }
 
 void StopMotor()
 {
   dualpid.deinit();
   move = false;
+  frente = false;
+  tras = false;
+  viraE = false;
+  viraD = false;
   setpid2.sendData("Funcao parar ");
   setpid2.sendData("kpa: " + String(kp1) + " kia: " + String(ki1) + " kda: " + String(kd1) + " | " + " kpb: " + String(kp2) + " kib: " + String(ki2) + " kdb: " + String(kd2) + " | " + " setpoint1: " + String(setpoint1) + " setpoint2: " + String(setpoint2));
   motor.stop();
@@ -105,10 +145,18 @@ void printEspNow()
     {
       motor.setSpeed(out1, out2);
     }
-    // if (gira)
-    // {
-    //   motor.setSpeed(-dualpid.getOutput1(), -dualpid.getOutput2());
-    // }
+    if (tras)
+    {
+      motor.setSpeed(-out1, -out2);
+    }
+    if (viraE)
+    {
+      motor.setSpeed(out1, -out2);
+    }
+    if (viraD)
+    {
+      motor.setSpeed(-out1, out2);
+    }
   }
 
   setpid2.sendData("input1:" + String(dualpid.getInput1()) + ", " + "output1:" + String(dualpid.getOutput1()) + ", " + "input2:" + String(dualpid.getInput2()) + ", " + "output2:" + String(dualpid.getOutput2()) + ", " + "setpoint:" + String(dualPID::setpoint1) + ", " + "diferença_contagem:" + String(getdiferencetotalpulse())); // exibe o valor do sensor

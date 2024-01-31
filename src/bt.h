@@ -5,6 +5,9 @@ char lastCommand = '\0';
 
 void startMotor();
 void StopMotor();
+void re();
+void viraEsquerda();
+void viraDireita();
 
 void processCommand(char command)
 {
@@ -15,7 +18,7 @@ void processCommand(char command)
         Serial.println("Parar o robô");
         // Adicione aqui a lógica para parar o robô, se necessário
         StopMotor();
-        
+
         break;
     case 'F':
         Serial.println("Mover o robô para frente");
@@ -25,15 +28,18 @@ void processCommand(char command)
     case 'B':
         Serial.println("Mover o robô para trás");
         // Adicione aqui a lógica para mover o robô para trás, se necessário
+         re();
 
         break;
     case 'L':
         Serial.println("Mover o robô para a esquerda");
         // Adicione aqui a lógica para mover o robô para a esquerda, se necessário
+        viraEsquerda();
         break;
     case 'R':
         Serial.println("Mover o robô para a direita");
         // Adicione aqui a lógica para mover o robô para a direita, se necessário
+        viraDireita();
         break;
     case 'I':
         Serial.println("Ação para I");
