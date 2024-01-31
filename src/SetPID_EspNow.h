@@ -19,7 +19,7 @@ public:
   static uint8_t *macAddress2Esp32;
 
   MyDerivedClass(uint8_t *macAddress);
-  static double kp1, kd1, ki1, setpoint;
+  static double kp1, kd1, ki1, setpoint1, setpoint2;
   static double kp2, kd2, ki2;
   static DataStruct dataSend;
   static DataStruct dataRecv;
@@ -46,7 +46,8 @@ double MyDerivedClass::kd1;
 double MyDerivedClass::kp2;
 double MyDerivedClass::ki2;
 double MyDerivedClass::kd2;
-double MyDerivedClass::setpoint;
+double MyDerivedClass::setpoint1;
+double MyDerivedClass::setpoint2;
 void startMotor();
 void StopMotor();
 void gravarEPROM();
@@ -135,12 +136,28 @@ void MyDerivedClass::OnDataRecv(const uint8_t *mac, const uint8_t *incomingData,
     EspNowSerial::sendData("Novo valor de kdb: " + String(MyDerivedClass::kd2));
   }
 
-  else if (input.startsWith("se"))
+  else if (input.startsWith("set"))
   {
-    MyDerivedClass::setpoint = input.substring(2).toFloat();
+    MyDerivedClass::setpoint1 = input.substring(3).toFloat();
+    MyDerivedClass::setpoint2 = MyDerivedClass::setpoint1;
+
     Serial.print("Novo valor de setpoint: ");
-    Serial.println(MyDerivedClass::setpoint);
-    EspNowSerial::sendData("Novo valor de setpoint: " + String(MyDerivedClass::setpoint));
+    Serial.println(MyDerivedClass::setpoint1);
+    EspNowSerial::sendData("Novo valor de setpoint: " + String(MyDerivedClass::setpoint1));
+  }
+  else if (input.startsWith("sea"))
+  {
+    MyDerivedClass::setpoint1 = input.substring(3).toFloat();
+    Serial.print("Novo valor de setpoint: ");
+    Serial.println(MyDerivedClass::setpoint1);
+    EspNowSerial::sendData("Novo valor de setpoint: " + String(MyDerivedClass::setpoint1));
+  }
+  else if (input.startsWith("seb"))
+  {
+    MyDerivedClass::setpoint2 = input.substring(3).toFloat();
+    Serial.print("Novo valor de setpoint: ");
+    Serial.println(MyDerivedClass::setpoint2);
+    EspNowSerial::sendData("Novo valor de setpoint: " + String(MyDerivedClass::setpoint2));
   }
   else if (input.startsWith("r"))
   {

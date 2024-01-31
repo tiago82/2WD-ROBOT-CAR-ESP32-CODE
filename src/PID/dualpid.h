@@ -1,7 +1,7 @@
 #pragma once
 #include <PID_v1.h>
 
-//#define SinglePID // comente essa linha para usar o PID duplo
+// #define SinglePID // comente essa linha para usar o PID duplo
 
 class dualPID
 {
@@ -14,22 +14,24 @@ private:
 public:
     static double kp1, ki1, kd1;
     static double kp2, ki2, kd2;
-    static double setpoint;
+    static double setpoint1, setpoint2;
 
     void init();
     void deinit();
     void updatePID(int Input1);
     void updatePID(int input1, int input2);
-    void setSetpoint(double Setpoint);
+    void setSetpoint1(double Setpoint);
+    void setSetpoint2(double Setpoint);
     int getInput1();
     int getInput2();
     int getOutput1();
     int getOutput2();
-    int getSetpoint();
+    double getSetpoint1();
+    double getSetpoint2();
 
     // Construtor: inicializa os membros da classe (tecnica "Construtores, Listas de inicializadores de membro")
-    dualPID() : myPID1(&input1, &output1, &setpoint, kp1, ki1, kd1, DIRECT),
-                myPID2(&input2, &output2, &setpoint, kp2, ki2, kd2, DIRECT)
+    dualPID() : myPID1(&input1, &output1, &setpoint1, kp1, ki1, kd1, DIRECT),
+                myPID2(&input2, &output2, &setpoint2, kp2, ki2, kd2, DIRECT)
     {
     }
 };
@@ -39,7 +41,7 @@ public:
 // membros de dados estáticos de ponto flutuante não podem ser inicializados diretamente na classe
 double dualPID::kp1, dualPID::ki1, dualPID::kd1;
 double dualPID::kp2, dualPID::ki2, dualPID::kd2;
-double dualPID::setpoint;
+double dualPID::setpoint1, dualPID::setpoint2;
 double dualPID::input1, dualPID::output1;
 double dualPID::input2, dualPID::output2;
 
@@ -48,7 +50,6 @@ void dualPID::init()
 {
     myPID2.SetOutputLimits(220, 650); // PWM 10bits vai de 0 a 1023
     myPID2.SetMode(AUTOMATIC);
-
 }
 #else
 void dualPID::init()
@@ -90,9 +91,13 @@ void dualPID::updatePID(int Input1, int Input2)
  *
  * @param Setpoint O valor de referência desejado.
  */
-void dualPID::setSetpoint(double Setpoint)
+void dualPID::setSetpoint1(double Setpoint)
 {
-    setpoint = Setpoint;
+    setpoint1 = Setpoint;
+}
+void dualPID::setSetpoint2(double Setpoint)
+{
+    setpoint2 = Setpoint;
 }
 
 /**
@@ -150,7 +155,11 @@ int dualPID::getOutput2()
  *
  * @return Retorna um inteiro representando o valor do setpoint.
  */
-int dualPID::getSetpoint()
+double dualPID::getSetpoint1()
 {
-    return setpoint;
+    return setpoint1;
+}
+double dualPID::getSetpoint2()
+{
+    return setpoint2;
 }
