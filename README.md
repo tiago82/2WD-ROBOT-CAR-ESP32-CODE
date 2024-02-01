@@ -6,7 +6,7 @@ Este projeto implementa um controlador Proporcional, Integral e Derivativo (PID)
 ## Componentes Necessários
 
 - ESP32 (Microcontrolador Principal)
-- ESP32 ou ESP8266 para setar PID remotamente(opcional)
+- ESP32 ou ESP8266 para setar parametros remotamente (opcional)
 - Driver Ponte H
 - Motores com Encoder
 - Modulo RFID(opcional)
