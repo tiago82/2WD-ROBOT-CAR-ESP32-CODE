@@ -3,6 +3,13 @@
 
 Este projeto implementa um controlador Proporcional, Integral e Derivativo (PID) para ajustar a velocidade das rodas de um robô, especialmente desenvolvido para a plataforma ESP32 usando o ambiente de desenvolvimento PlatformIO. O controle PID é uma técnica eficaz em sistemas dinâmicos, proporcionando uma maior precisão no movimento do robô. Com o uso do PID, é possível alcançar uma movimentação mais suave, reduzindo erros e permitindo que o robô mantenha trajetórias, como andar em linha reta, com maior acurácia.
 
+## Componentes Necessários
+
+- ESP32 (Microcontrolador)
+- Ponte H
+- Motores com Encoder
+- Modulo RFID(opcional)
+
 ## Funcionamento
 
 O controlador PID é composto por três componentes principais:
