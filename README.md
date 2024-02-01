@@ -41,7 +41,7 @@ O projeto está organizado para ser utilizado com a plataforma ESP32 e o ambient
 
 As principais bibliotecas e dependências usadas neste projeto incluem:
 
-- `Preferences.h`: Biblioteca para salvar e recuperar configurações persistentes no ESP32.
+- `Preferences.h`: Biblioteca para salvar e recuperar parâmetros na memória flash no ESP32.
 - `rfid_functions.h`: Biblioteca que facilita as configurações de cartões RFID (Radio-Frequency Identification).
 - `MFRC522.h`: Biblioteca para controle do módulo leitor RFID MFRC522.
 - `PID_v1.h`: Biblioteca para implementação do controlador PID (Proporcional, Integral, Derivativo).
