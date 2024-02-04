@@ -1,16 +1,16 @@
 /*
-  *  Autor: Tiago
-  *  Data: 01/01/2024
-  *  Objetivo: Controle de robô com 2 motores DC com controle de velocidade e PID
-  *  Plataforma: ESP32
-  *  IDE: PlatformIO
-  *  Bibliotecas:
-*/
+ *  Autor: Tiago
+ *  Data: 01/01/2024
+ *  Objetivo: Controle de robô com 2 motores DC com controle de velocidade e PID
+ *  Plataforma: ESP32
+ *  IDE: PlatformIO
+ *  Bibliotecas:
+ */
 
 #include <Arduino.h>
 #include <Preferences.h>
 #include "MultiEncoder.h"
-#include "PID/dualpid.h"
+#include "dualpid.h"
 #include "Pins.h"
 #include "rfid_functions.h"
 #include "MotorDriver.h"
@@ -152,6 +152,7 @@ void printEspNow()
     OUTPUT_ = dualpid.getOutput2();
     if (frente)
     {
+      // motor.setSpeed(out1, out2);
       motor.setSpeed(out1, out2);
     }
     if (tras)
@@ -168,7 +169,7 @@ void printEspNow()
     }
   }
 
-  setpid2.sendData("input1:" + String(dualpid.getInput1()) + ", " + "output1:" + String(dualpid.getOutput1()) + ", " + "input2:" + String(dualpid.getInput2()) + ", " + "output2:" + String(dualpid.getOutput2()) + ", " + "setpoint:" + String(dualPID::setpoint1) + ", " + "diferença_contagem:" + String(getdiferencetotalpulse())); // exibe o valor do sensor
+  setpid2.sendData("setpoint1:" + String(dualPID::setpoint1) + ", " + "setpoint2:" + String(dualPID::setpoint2) + ", " + "input1:" + String(dualpid.getInput1()) + ", " + "input2:" + String(dualpid.getInput2()) + ", " + "output1:" + String(dualpid.getOutput1()) + ", " + "output2:" + String(dualpid.getOutput2()) + ", " + "diferença:" + String(getdiferencetotalpulse())); // exibe o valor do sensor
   // setpid2.sendData(String(gettotalpulse1()) + "," + String(gettotalpulse2())); // exibe o total de pulsos
   // setpid2.sendData(String(getdiferencetotalpulse())); // exibe o diferença de pulsos entre motores
   // setpid2.sendData(String(s(getpulse1(), getpulse2()))); // exibe distancia percorrida
@@ -261,19 +262,19 @@ void loop()
   //   StopMotor();
   // }
 
-  // if (frente)
-  // {
-  //   if (gettotalpulse1() >= 2000) // mudei contagem encoder logo edometria falta consetar
-  //   {
-  //     // frente = false;
-  //     setpid2.sendData("totalpulsos1=" + String(gettotalpulse1()) + " totalpulsos2=" + String(gettotalpulse2()));
-  //     StopMotor();
+  if (frente)
+  {
+    if (gettotalpulse1() >= moverpordistancia(0.8)) // mudei contagem encoder logo edometria falta consetar
+    {
+      // frente = false;
+      setpid2.sendData("totalpulsos1=" + String(gettotalpulse1()) + " totalpulsos2=" + String(gettotalpulse2()));
+      StopMotor();
 
-  //     gira = true;
-  //     delay(500);
-  //     // startMotor();
-  //   }
-  // }
+      // gira = true;
+      delay(500);
+      // startMotor();
+    }
+  }
   // if (gira)
   // {
   //   if (gettotalpulse1() >= moverpordistancia(0.8))
@@ -285,4 +286,14 @@ void loop()
   //     delay(500);
   //   }
   // }
+
+  if (gettotalpulse1() < 1 && gettotalpulse2() < 1)
+  { // regula a velocidade de subida do pid quando o robo esta parado
+
+    timeCountEncoder = 50;
+  }
+  else
+  {
+    timeCountEncoder = 250;
+  }
 }

@@ -174,6 +174,7 @@ void MyDerivedClass::OnDataRecv(const uint8_t *mac, const uint8_t *incomingData,
   else if (input.startsWith("sa"))
   {
     gravarEPROM();
+    esp_restart();
   }
   // else
   // {

@@ -22,7 +22,7 @@
 
 struct DataStruct
 {
-  char message[100];
+  char message[150]; // tamanho da mensagem
 };
 
 class EspNowSerial : public Print

@@ -1,0 +1,1 @@
+04/06/2024 = kpa: 0.05 kia: 0.50 kda: 0.00 |  kpb: 0.05 kib: 0.50 kdb: 0.00 |  setpoint1: 300.00 setpoint2: 300. Tensao 7.83 volts

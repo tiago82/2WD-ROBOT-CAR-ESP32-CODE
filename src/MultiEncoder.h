@@ -14,7 +14,7 @@
 #pragma once
 #include <Arduino.h>
 
-int timeCountEncoder = 50; // faixa em milisegundos de contagem dos pulsos.
+int timeCountEncoder = 250; // Se necessário, ajuste o intervalo em milisegundos de contagem dos pulsos .
 volatile int pulseCountEncoder1 = 0;
 volatile int pulseCountEncoder2 = 0;
 volatile int pulseTotalCountEncoder1 = 0;
@@ -42,14 +42,14 @@ void ICACHE_RAM_ATTR funcaoInterrupcao2()
 
 void startEncoder(int pinEncoder1)
 {
-  pinMode(pinEncoder1, INPUT_PULLDOWN);
+  pinMode(pinEncoder1, INPUT);
   attachInterrupt(digitalPinToInterrupt(pinEncoder1), funcaoInterrupcao1, RISING );
 }
 
 void startEncoder(int pinEncoder1, int pinEncoder2)
 {
-  pinMode(pinEncoder1, INPUT_PULLDOWN);
-  pinMode(pinEncoder2, INPUT_PULLDOWN);
+  
+  pinMode(pinEncoder2, INPUT);
   attachInterrupt(digitalPinToInterrupt(pinEncoder1), funcaoInterrupcao1, RISING );
   attachInterrupt(digitalPinToInterrupt(pinEncoder2), funcaoInterrupcao2, RISING );
 }
@@ -179,7 +179,7 @@ float s(int pulse1, int pulse2)
 }
 
 const float pi = 3.14159265359;
-const int rev = 1265;     // numero de pulsos por revolucao do encoder(Obtido experimentalmente)
+const int rev = 1265/2;     // numero de pulsos por revolucao do encoder(Obtido experimentalmente)
 const float L = 0.15;       // distancia entre as rodas
 const float circ = 0.207; // circunferencia aproximada em metro da roda (Obtido experimentalmente)
 
