@@ -2,7 +2,7 @@
 /**
  * @file dualpid.h
  * @brief Este arquivo contém a definição da classe dualPID, que implementa um controlador PID duplo.
- * 
+ *
  * A classe dualPID é responsável por controlar dois sistemas independentes utilizando controladores PID.
  * Ela fornece métodos para inicialização, atualização dos controladores, definição de setpoints e obtenção de valores de entrada e saída.
  * Os controladores podem ser configurados para operar de forma individual (SinglePID) ou em conjunto (dualPID).
@@ -29,6 +29,7 @@ public:
     void deinit();
     void updatePID(int Input1);
     void updatePID(int input1, int input2);
+    void loopPID(int Input1, int Input2);
     void setSetpoint1(double Setpoint);
     void setSetpoint2(double Setpoint);
     int getInput1();
@@ -89,6 +90,14 @@ void dualPID::updatePID(int Input1, int Input2)
 {
     myPID1.SetTunings(kp1, ki1, kd1);
     myPID2.SetTunings(kp2, ki2, kd2);
+    input1 = Input1;
+    input2 = Input2;
+    myPID1.Compute();
+    myPID2.Compute();
+}
+
+void dualPID::loopPID(int Input1, int Input2)
+{
     input1 = Input1;
     input2 = Input2;
     myPID1.Compute();

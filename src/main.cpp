@@ -24,6 +24,7 @@ double kp1, kp2;
 double ki1, ki2;
 double kd1, kd2;
 double setpoint1, setpoint2;
+double setpoint1_, setpoint2_;
 
 //const char *pin_bt = "1234"; 
 //const String *name_bt = "legal";
@@ -60,9 +61,11 @@ int OUTPUT_;
 
 void startMotor()
 {
-  // motor.moveForward(move ? 0 : 300);  // Operador ternário (? :) Se move for verdadeiro, escolhemos 0 (parar o motor). Se move for falso, escolhemos 300.
+  // motor.moveForward(move ? 0 : 300);  // test Operador ternário (? :) Se move for verdadeiro, escolhemos 0 (parar o motor). Se move for falso, escolhemos 300.
   // move = !move;
   dualpid.init();
+  setpoint1 = 0;
+  setpoint2 = 0;
   move = true;
   frente = true;
   tras = false;
@@ -72,8 +75,6 @@ void startMotor()
 
 void re()
 {
-  // motor.moveForward(move ? 0 : 300);  // Operador ternário (? :) Se move for verdadeiro, escolhemos 0 (parar o motor). Se move for falso, escolhemos 300.
-  // move = !move;
   dualpid.init();
   move = true;
   frente = false;
@@ -132,14 +133,14 @@ void gravarEPROM()
   preferences.end();
 }
 
-void printEspNow()
+void ComputerPID()
 {
-  dualpid.updatePID(getpulse1() * 1, getpulse2());
+  //dualpid.updatePID(getpulse1() * 1, getpulse2());
 
   int out1 = dualpid.getOutput1();
   int out2 = dualpid.getOutput2();
-  int pulse1 = getpulse1();
-  int pulse2 = getpulse2();
+  int pulse1 = getEncSpeed1();
+  int pulse2 = getEncSpeed2();
 
   // if (getdiferencetotalpulse() > 0) // menor que zero - vira direita
   // {
@@ -242,7 +243,7 @@ void loop()
   RFID::checkRFIDPresent(mfrc522);
   if (move)
   {
-    updateEncoder(printEspNow);
+    updateEncoder(ComputerPID);
   }
   kp1 = MyDerivedClass::kp1;
   ki1 = MyDerivedClass::ki1;
@@ -266,19 +267,20 @@ void loop()
   //   StopMotor();
   // }
 
-  if (frente)
-  {
-    if (gettotalpulse1() >= moverpordistancia(0.8)) // mudei contagem encoder logo edometria falta consetar
-    {
-      // frente = false;
-      setpid2.sendData("totalpulsos1=" + String(gettotalpulse1()) + " totalpulsos2=" + String(gettotalpulse2()));
-      StopMotor();
+  // if (frente)
+  // {
+  //   if (gettotalpulse1() >= moverpordistancia(0.8)) // mudei contagem encoder logo edometria falta consetar
+  //   {
+  //     // frente = false;
+  //     setpid2.sendData("totalpulsos1=" + String(gettotalpulse1()) + " totalpulsos2=" + String(gettotalpulse2()));
+  //     StopMotor();
 
-      // gira = true;
-      delay(500);
-      // startMotor();
-    }
-  }
+  //     // gira = true;
+  //     delay(500);
+  //     // startMotor();
+  //   }
+  // }
+
   // if (gira)
   // {
   //   if (gettotalpulse1() >= moverpordistancia(0.8))
@@ -290,6 +292,8 @@ void loop()
   //     delay(500);
   //   }
   // }
+
+  dualpid.loopPID(getEncSpeed1(), getEncSpeed2());
 
   if (gettotalpulse1() < 1 && gettotalpulse2() < 1)
   { // regula a velocidade de subida do pid quando o robo esta parado

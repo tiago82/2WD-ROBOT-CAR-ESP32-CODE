@@ -15,8 +15,10 @@
 #include <Arduino.h>
 
 int timeCountEncoder = 250; // Se necessário, ajuste o intervalo em milisegundos de contagem dos pulsos .
-volatile int pulseCountEncoder1 = 0;
-volatile int pulseCountEncoder2 = 0;
+volatile int EncSpeed1 = 0;
+volatile int EncSpeed2 = 0;
+volatile int pulseCount1 = 0;
+volatile int pulseCount2 = 0;
 volatile int pulseTotalCountEncoder1 = 0;
 volatile int pulseTotalCountEncoder2 = 0;
 volatile unsigned long lastUpdateTime = 0;
@@ -26,17 +28,17 @@ void startEncoder(int pinEncoder1, int pinEncoder2);
 void updateEncoder();             // Atualiza a contagem de pulsos
 void updateEncoder(FuncPtr func); // Atualiza a contagem de pulsos e executa uma função passada como parâmetro, Importante para chamar funcao que calcula PID.
 void updateEncoderPrint();        // Atualiza a contagem de pulsos e imprime o valor por serial.
-int getpulse1();                  // Retorna o número atual de pulsos por segundo .
-int getpulse2();                  // Retorna o número atual de pulsos por segundo .
+int getEncSpeed1();                  // Retorna o número atual de pulsos por segundo .
+int getEncSpeed2();                  // Retorna o número atual de pulsos por segundo .
 
 void ICACHE_RAM_ATTR funcaoInterrupcao1()
 {
-  pulseCountEncoder1++;
+  pulseCount1++;
   pulseTotalCountEncoder1++;
 }
 void ICACHE_RAM_ATTR funcaoInterrupcao2()
 {
-  pulseCountEncoder2++;
+  pulseCount2++;
   pulseTotalCountEncoder2++;
 }
 
@@ -61,8 +63,10 @@ void updateEncoder()
   {
     // Serial.print("Pulsos por segundo: ");
     // Serial.println(pulseCountEncoder);
-    pulseCountEncoder1 = 0;
-    pulseCountEncoder2 = 0;
+    EncSpeed1 = pulseCount1;
+    EncSpeed2 = pulseCount2;
+    pulseCount1 = 0;
+    pulseCount2 = 0;
     lastUpdateTime = currentTime;
   }
 }
@@ -72,9 +76,13 @@ void updateEncoder(FuncPtr func)
   unsigned long currentTime = millis();
   if (currentTime - lastUpdateTime >= timeCountEncoder)
   {
+    EncSpeed1 = pulseCount1;
+
     func(); // Chama a função passada como argumento
-    pulseCountEncoder1 = 0;
-    pulseCountEncoder2 = 0;
+    EncSpeed1 = pulseCount1;
+    EncSpeed2 = pulseCount2;
+    pulseCount1 = 0;
+    pulseCount2 = 0;
     lastUpdateTime = currentTime;
   }
 }
@@ -85,11 +93,13 @@ void updateEncoderPrint()
   if (currentTime - lastUpdateTime >= timeCountEncoder)
   {
     Serial.print("Pulsos por segundo1: ");
-    Serial.print(pulseCountEncoder1);
+    Serial.print(pulseCount1);
     Serial.print(" Pulsos por segundo2: ");
-    Serial.println(pulseCountEncoder2);
-    pulseCountEncoder1 = 0;
-    pulseCountEncoder2 = 0;
+    Serial.println(pulseCount2);
+    EncSpeed1 = pulseCount1;
+    EncSpeed2 = pulseCount2;
+    pulseCount1 = 0;
+    pulseCount2 = 0;
     lastUpdateTime = currentTime;
   }
 }
@@ -99,18 +109,18 @@ void updateEncoderPrint()
  *
  * @return O valor do pulso 1.
  */
-int getpulse1()
+int getEncSpeed1()
 {
-  return pulseCountEncoder1;
+  return EncSpeed1;
 }
 /**
  * @brief Retorna o valor do pulso 2.
  *
  * @return O valor do pulso 2.
  */
-int getpulse2()
+int getEncSpeed2()
 {
-  return pulseCountEncoder2;
+  return EncSpeed2;
 }
 
 int gettotalpulse1()
