@@ -1,1 +1,4 @@
-04/06/2024 = kpa: 0.05 kia: 0.50 kda: 0.00 |  kpb: 0.05 kib: 0.50 kdb: 0.00 |  setpoint1: 300.00 setpoint2: 300. Tensao 7.83 volts
+04/06/2024 
+            kpa: 0.05 kia: 0.50 kda: 0.00 |  kpb: 0.05 kib: 0.50 kdb: 0.00 |  setpoint1: 300.00 setpoint2: 300,  7.83 volts, aceitavel
+18:22       kpa: 0.40 kia: 0.50 kda: 0.00 |  kpb: 0.35 kib: 0.50 kdb: 0.00 |  setpoint1: 240.00 setpoint2: 235.0, 7.59 volts, aceitavel
+18:22       kpa: 0.60 kia: 0.50 kda: 0.00 |  kpb: 0.60 kib: 0.50 kdb: 0.00 |  setpoint1: 240.00 setpoint2: 235.0, 7.59 volts aceitavel

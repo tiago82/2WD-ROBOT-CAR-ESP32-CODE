@@ -25,6 +25,9 @@ double ki1, ki2;
 double kd1, kd2;
 double setpoint1, setpoint2;
 
+//const char *pin_bt = "1234"; 
+//const String *name_bt = "legal";
+
 // Chaves para armazenar valores na Flash
 const char *KP1_KEY = "kp1";
 const char *KI1_KEY = "ki1";
@@ -218,6 +221,7 @@ void setup()
   RFID::addCardTwoFunctions(0x10602403, startMotor, StopMotor);
 
   btsetup();
+  //SerialBT.setPin(pin_bt);
 
   MyDerivedClass::kp1 = kp1;
   MyDerivedClass::ki1 = ki1;

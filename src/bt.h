@@ -85,6 +85,10 @@ void btsetup()
     SerialBT.begin("ESP32Bluetooth"); // Nome do dispositivo Bluetooth
 }
 
+void btsetup(String name_bt)
+{
+    SerialBT.begin(name_bt); // Nome do dispositivo Bluetooth
+}
 void btloop()
 {
     if (SerialBT.available())
