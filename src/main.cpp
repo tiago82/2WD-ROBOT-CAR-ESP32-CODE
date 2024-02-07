@@ -9,6 +9,7 @@
 
 #include <Arduino.h>
 #include <Preferences.h>
+#include <NoDelay.h>
 #include "MultiEncoder.h"
 #include "dualpid.h"
 #include "Pins.h"
@@ -26,8 +27,10 @@ double kd1, kd2;
 double setpoint1, setpoint2;
 double setpoint1_, setpoint2_;
 
-//const char *pin_bt = "1234"; 
-//const String *name_bt = "legal";
+noDelay ESPNOWmsgtime(1000); // Creats a noDelay varible set to 1000ms
+
+// const char *pin_bt = "1234";
+// const String *name_bt = "legal";
 
 // Chaves para armazenar valores na Flash
 const char *KP1_KEY = "kp1";
@@ -135,7 +138,7 @@ void gravarEPROM()
 
 void ComputerPID()
 {
-  //dualpid.updatePID(getpulse1() * 1, getpulse2());
+  // dualpid.updatePID(getpulse1() * 1, getpulse2());
 
   int out1 = dualpid.getOutput1();
   int out2 = dualpid.getOutput2();
@@ -151,7 +154,7 @@ void ComputerPID()
   //   out2 = dualpid.getOutput1() - 0.05*dualpid.getOutput1() ;
   // }
 
-  if (OUTPUT_ != dualpid.getOutput2())
+  if (OUTPUT_ != dualpid.getOutput2()) // verificacao obsoleta
   {
     OUTPUT_ = dualpid.getOutput2();
     if (frente)
@@ -222,7 +225,7 @@ void setup()
   RFID::addCardTwoFunctions(0x10602403, startMotor, StopMotor);
 
   btsetup();
-  //SerialBT.setPin(pin_bt);
+  // SerialBT.setPin(pin_bt);
 
   MyDerivedClass::kp1 = kp1;
   MyDerivedClass::ki1 = ki1;
@@ -234,6 +237,31 @@ void setup()
   MyDerivedClass::setpoint2 = setpoint2;
 }
 
+void sendESPNOW()
+{
+  if (ESPNOWmsgtime.update())
+  {
+    setpid2.sendData("setpoint1:" + String(dualPID::setpoint1) + ", " + "setpoint2:" + String(dualPID::setpoint2) + ", " + "input1:" + String(dualpid.getInput1()) + ", " + "input2:" + String(dualpid.getInput2()) + ", " + "output1:" + String(dualpid.getOutput1()) + ", " + "output2:" + String(dualpid.getOutput2()) + ", " + "diferença:" + String(getdiferencetotalpulse())); // exibe o valor do sensor
+    // setpid2.sendData(String(gettotalpulse1()) + "," + String(gettotalpulse2())); // exibe o total de pulsos
+    // setpid2.sendData(String(getdiferencetotalpulse())); // exibe o diferença de pulsos entre motores
+    // setpid2.sendData(String(s(getpulse1(), getpulse2()))); // exibe distancia percorrida
+    // setpid2.sendData("quantidade para a rotacao" + String(girarroborGraus(180)));
+  }
+}
+
+void PIDcomputer()
+{
+  if (move)
+  {
+    dualpid.loopPID(getEncSpeed1(), getEncSpeed2());
+    int out1 = dualpid.getOutput1();
+    int out2 = dualpid.getOutput2();
+    motor.setSpeed(out1, out2);
+    sendESPNOW();
+  }
+}
+
+
 //======================== Loop ========================
 void loop()
 {
@@ -241,10 +269,8 @@ void loop()
   btloop();
 
   RFID::checkRFIDPresent(mfrc522);
-  if (move)
-  {
-    updateEncoder(ComputerPID);
-  }
+  PIDcomputer();
+
   kp1 = MyDerivedClass::kp1;
   ki1 = MyDerivedClass::ki1;
   kd1 = MyDerivedClass::kd1;
@@ -292,8 +318,6 @@ void loop()
   //     delay(500);
   //   }
   // }
-
-  dualpid.loopPID(getEncSpeed1(), getEncSpeed2());
 
   if (gettotalpulse1() < 1 && gettotalpulse2() < 1)
   { // regula a velocidade de subida do pid quando o robo esta parado

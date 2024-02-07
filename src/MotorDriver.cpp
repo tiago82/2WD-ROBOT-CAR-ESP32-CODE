@@ -23,10 +23,22 @@ MotorDriver::MotorDriver(int enA_left, int in1_left, int in2_left, int enA_right
     digitalWrite(in2_right_pin, LOW);
 }
 
-void MotorDriver::setSpeed(int leftSpeed, int rightSpeed)
+void MotorDriver::setSpeed(int leftSpeed, int rightSpeed) // possui tratatamento para evitar mudanças desnecessárias caso a velocidade seja a mesma.
 {
-    setSpeedLeft(leftSpeed);
-    setSpeedRight(rightSpeed);
+
+    if (leftSpeed != lastLeftSpeed)
+    {
+        setSpeedLeft(leftSpeed);
+        lastLeftSpeed = leftSpeed;
+    }
+
+    if (rightSpeed != MotorDriver::lastRightSpeed)
+    {
+        setSpeedRight(rightSpeed);
+        lastRightSpeed = rightSpeed;
+    }
+
+
 }
 
 void MotorDriver::setSpeedLeft(int speed)

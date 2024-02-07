@@ -2,7 +2,7 @@
 #include <WiFi.h>
 
 // Endereço MAC do outro ESP32 para comunicação
-uint8_t macAddress2Esp32[] = { 0x48, 0xE7, 0x29, 0x9F, 0xEC, 0x20 };  // MAC DO GERE
+uint8_t macAddress2Esp32[] = { 0x48, 0xE7, 0x29, 0x9F, 0xEC, 0x20 };  // MAC DO ESP32 GERE
 
 // Estrutura de dados para enviar e receber mensagens
 struct DataStruct {

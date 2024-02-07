@@ -30,6 +30,9 @@ private:
     int enA_right_pin;
     int in1_right_pin;
     int in2_right_pin;
+    int lastLeftSpeed;
+    int lastRightSpeed;
+
 };
 
 #endif
