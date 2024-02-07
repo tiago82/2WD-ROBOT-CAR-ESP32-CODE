@@ -1,13 +1,20 @@
 04/06/2024 
             kpa: 0.05 kia: 0.50 kda: 0.00 |  kpb: 0.05 kib: 0.50 kdb: 0.00 |  setpoint1: 300.00 setpoint2: 300,  7.83 volts, aceitavel
-18:22       kpa: 0.40 kia: 0.50 kda: 0.00 |  kpb: 0.35 kib: 0.50 kdb: 0.00 |  setpoint1: 240.00 setpoint2: 235.0, 7.59 volts, aceitavel
-18:22       kpa: 0.60 kia: 0.50 kda: 0.00 |  kpb: 0.60 kib: 0.50 kdb: 0.00 |  setpoint1: 240.00 setpoint2: 235.0, 7.59 volts, aceitavel
+    18:22   kpa: 0.40 kia: 0.50 kda: 0.00 |  kpb: 0.35 kib: 0.50 kdb: 0.00 |  setpoint1: 240.00 setpoint2: 235.0, 7.59 volts, aceitavel
+    18:22   kpa: 0.60 kia: 0.50 kda: 0.00 |  kpb: 0.60 kib: 0.50 kdb: 0.00 |  setpoint1: 240.00 setpoint2: 235.0, 7.59 volts, aceitavel
 
 05/02/2024 
 
-08:37       kpa: 0.60 kia: 0.50 kda: 0.00 |  kpb: 0.60 kib: 0.50 kdb: 0.00 |  setpoint1: 240.00 setpoint2: 230. 8.59 vols, ruim  
+    08:37   kpa: 0.60 kia: 0.50 kda: 0.00 |  kpb: 0.60 kib: 0.50 kdb: 0.00 |  setpoint1: 240.00 setpoint2: 230. 8.59 vols, ruim
+
+07/02/2024 
+    10:17   kpa: 0.60 kia: 0.50 kda: 0.00 |  kpb: 0.60 kib: 0.50 kdb: 0.00 |  setpoint1: 250.00 setpoint2: 240. 7.88 vols, aceitavel( aceitavel 2 ou terceira tentativa)  
 
 
+
+
+
+===============================================================================================================
 0.36,0.00,68.39
 0.33,0.00,13.84
 

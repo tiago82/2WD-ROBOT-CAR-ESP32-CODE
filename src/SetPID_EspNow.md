@@ -38,7 +38,7 @@ Os comandos a seguir podem ser enviados para a placa ESP32 para interagir com a 
 ### Controle do Motor:
 
 - `w`: Inicia os motores.
-- `e`: Para os motores.
+- `e`: Para os motores e receber as contantes atuais.
 
 ### Ações Adicionais:
 
