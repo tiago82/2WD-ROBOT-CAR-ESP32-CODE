@@ -8,6 +8,9 @@ A classe `MyDerivedClass` é uma classe derivada da classe base `EspNowSerial`, 
 
 Nesta aplicação, a comunicação via ESP-NOW é estabelecida entre um transmissor e um receptor. O transmissor é responsável por enviar os textos escritos pelo usuário no monitor serial, enquanto esse código no receptor trata os dados recebidos, atribuindo valores aos parâmetros do controlador PID conforme necessário.
 
+Além disso, há uma parte do código principal que envia informações de input e output PID para o transmissor. Essas informações podem ser plotadas pelo Arduino IDE e ajudam na análise do sistema, auxiliando na decisão dos parâmetros do controlador PID.
+
+
 ## Comandos Disponíveis
 
 Os comandos a seguir podem ser enviados para a placa ESP32 para interagir com a classe `MyDerivedClass` através da comunicação ESP-NOW:
