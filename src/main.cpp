@@ -8,25 +8,50 @@
  */
 
 #include <Arduino.h>
-#include <Preferences.h>
+
+#include <BluetoothSerial.h>
 #include <NoDelay.h>
 #include <PID_v1.h>
-//#include "MultiEncoder.h"
-// #include "dualpid.h"
 #include "Pins.h"
 #include "rfid_functions.h"
-#include "MotorDriver.h"
-#include "SetPID_EspNow.h"
-#include "bt.h"
+#include <Ultrasonic.h>
+
 
 // Shift + Alt + F format code
 
+#define tagMu_1 "13 5A 43 10"
+#define tagMuv_1 "B3 4D FE EC"
+#define tagGirar_1 "A3 47 57 10"
+#define tagNrf_1 "C3 5F 4D 10"
+#define tagBluetooth_1 "03 7F E2 12"
+#define tagSonar_1 "E3 80 B4 11"
+#define tagSonarServo_1 "83 31 BB 11"
+
+#define tagMu_2 "32 42 D6 4C"
+#define tagMuv_2 "8C EE 80 47"
+#define tagGirar_2 "33 D8 58 10"
+#define tagNrf_2 "32 3E 96 4C"
+#define tagBluetooth_2 "B3 69 78 11"
+#define tagSonar_2 "73 35 54 10"
+#define tagSonarServo_2 "13 14 BB 11"
+
+#define tagMu_3 "32 42 D6 4C"
+#define tagMuv_3 "8C EE 80 47"
+#define tagGirar_3 "A3 47 57 10"
+#define tagNrf_3 "32 3E 96 4C"
+#define tagBluetooth_3 "03 24 60 10"
+#define tagSonar_3 "13 49 4A 10"
+#define tagSonarServo_3 "13 14 BB 11"
+
 // Variáveis globais
-double kp1, kp2;
-double ki1, ki2;
-double kd1, kd2;
-double setpoint1, setpoint2;
-double setpoint1_, setpoint2_;
+double kp1 = 0.6;
+double ki1 = 0.5;
+double kd1 = 0.0;
+double kp2 = 0.6;
+double ki2 = 0.5;
+double kd2 = 0.0;
+double setpoint1 = 250;
+double setpoint2 = 250;
 double input1, output1;
 double input2, output2;
 
@@ -41,18 +66,11 @@ volatile unsigned long lastUpdateTime = 0;
 
 noDelay ESPNOWmsgtime(1000); // Creats a noDelay varible set to 1000ms
 
-// const char *pin_bt = "1234";
-// const String *name_bt = "legal";
+String conteudo = "";
+char btdata = 'a';
+#define btnome "PROMETHEUS"
 
-// Chaves para armazenar valores na Flash
-const char *KP1_KEY = "kp1";
-const char *KI1_KEY = "ki1";
-const char *KD1_KEY = "kd1";
-const char *KP2_KEY = "kp2";
-const char *KI2_KEY = "ki2";
-const char *KD2_KEY = "kd2";
-const char *SETPOINT1_KEY = "setpoint1";
-const char *SETPOINT2_KEY = "setpoint2";
+// const String *name_bt = "legal";
 
 // estados
 bool move = false;
@@ -61,21 +79,22 @@ bool tras = false;
 bool viraE = false;
 bool viraD = false;
 
-// Endereço MAC do segundo ESP32 para comunicação via ESP-NOW
-// uint8_t macAddress2Esp32[] = {0xA8, 0x42, 0xE3, 0xCB, 0x82, 0xEC};
-uint8_t macAddress2Esp32[] = {0xB8, 0xD6, 0x1A, 0x47, 0x62, 0x8C}; // tiago ESP32 38 PIN
-
-// Instâncias de classes
-// dualPID dualpid;
-MyDerivedClass setpid2(macAddress2Esp32);
-Preferences preferences;
 MFRC522 mfrc522(SS_RFID_PIN, RST_RFID_PIN);
-MotorDriver motor(EN1, IN1, IN2, EN2, IN4, IN3);
+// MotorDriver motor(EN1, IN1, IN2, EN2, IN4, IN3);
+
+Ultrasonic ultrasonic(TRIG_PIN, ECHO_PIN);
+
+BluetoothSerial BT;
 
 PID myPID1(&input1, &output1, &setpoint1, kp1, ki1, kd1, DIRECT);
 PID myPID2(&input2, &output2, &setpoint2, kp2, ki2, kd2, DIRECT);
 
 int OUTPUT_;
+
+void bluetooth();
+void bluetoothPID();
+void sonar();
+void reset();
 
 void ICACHE_RAM_ATTR funcaoInterrupcao1()
 {
@@ -90,10 +109,10 @@ void ICACHE_RAM_ATTR funcaoInterrupcao2()
 
 void startEncoder(int pinEncoder1, int pinEncoder2)
 {
-  
+
   pinMode(pinEncoder2, INPUT);
-  attachInterrupt(digitalPinToInterrupt(pinEncoder1), funcaoInterrupcao1, RISING );
-  attachInterrupt(digitalPinToInterrupt(pinEncoder2), funcaoInterrupcao2, RISING );
+  attachInterrupt(digitalPinToInterrupt(pinEncoder1), funcaoInterrupcao1, RISING);
+  attachInterrupt(digitalPinToInterrupt(pinEncoder2), funcaoInterrupcao2, RISING);
 }
 
 void updateEncoder()
@@ -138,8 +157,16 @@ void startMotor()
   // motor.moveForward(move ? 0 : 300);  // test Operador ternário (? :) Se move for verdadeiro, escolhemos 0 (parar o motor). Se move for falso, escolhemos 300.
   // move = !move;
   PIDinit();
-  //setpoint1 = 0;
-  //setpoint2 = 0;
+  // setpoint1 = 0;
+  // setpoint2 = 0;
+
+  digitalWrite(IN1, HIGH);
+  digitalWrite(IN2, LOW);
+  digitalWrite(IN3, HIGH);
+  digitalWrite(IN3, LOW);
+  analogWrite(EN1, 250);
+  analogWrite(EN1, 250);
+
   move = true;
   frente = true;
   tras = false;
@@ -154,10 +181,8 @@ void StopMotor()
   tras = false;
   viraE = false;
   viraD = false;
-  setpid2.sendData("Funcao parar ");
-  setpid2.sendData("kpa: " + String(kp1) + " kia: " + String(ki1) + " kda: " + String(kd1) + " | " + " kpb: " + String(kp2) + " kib: " + String(ki2) + " kdb: " + String(kd2) + " | " + " setpoint1: " + String(setpoint1) + " setpoint2: " + String(setpoint2));
-  motor.stop();
-  //resettotalpulse();
+  // motor.stop();
+  //  resettotalpulse();
 }
 
 void viraDireita()
@@ -188,24 +213,20 @@ void re()
   viraD = false;
 }
 
-
-
-void gravarEPROM()
+void rfid()
 {
-  preferences.begin("myApp", false);
-  preferences.putDouble(KP1_KEY, kp1);
-  preferences.putDouble(KI1_KEY, ki1);
-  preferences.putDouble(KD1_KEY, kd1);
-  preferences.putDouble(KP2_KEY, kp2);
-  preferences.putDouble(KI2_KEY, ki2);
-  preferences.putDouble(KD2_KEY, kd2);
-  preferences.putDouble(SETPOINT1_KEY, setpoint1);
-  preferences.putDouble(SETPOINT2_KEY, setpoint2);
-  preferences.end();
-  preferences.begin("myApp", false);
-  setpid2.sendData("Constantes gravadas na EEPROM");
-  setpid2.sendData("kpa: " + String(kp1) + " kia: " + String(ki1) + " kda: " + String(kd1) + " | " + " kpb: " + String(kp2) + " kib: " + String(ki2) + " kdb: " + String(kd2) + " | " + " setpoint1: " + String(setpoint1) + " setpoint2: " + String(setpoint2));
-  preferences.end();
+  if (mfrc522.PICC_IsNewCardPresent())
+  {
+    if (mfrc522.PICC_ReadCardSerial())
+    {
+      for (byte i = 0; i < mfrc522.uid.size; i++)
+      {
+        conteudo.concat(String(mfrc522.uid.uidByte[i] < 0x10 ? " 0" : " "));
+        conteudo.concat(String(mfrc522.uid.uidByte[i], HEX));
+      }
+      conteudo.toUpperCase();
+    }
+  }
 }
 
 void ComputerPID()
@@ -247,160 +268,499 @@ void ComputerPID()
   //     motor.setSpeed(-out1, out2);
   //   }
   // }
-
-  setpid2.sendData("setpoint1:" + String(setpoint1) + ", " + "setpoint2:" + String(setpoint2) + ", " + "input1:" + String(input1) + ", " + "input2:" + String(input2) + ", " + "output1:" + String(output1) + ", " + "output2:" + String(output1) + ", " + "diferença:" + String(getdiferencetotalpulse())); // exibe o valor do sensor
-  // setpid2.sendData(String(gettotalpulse1()) + "," + String(gettotalpulse2())); // exibe o total de pulsos
-  // setpid2.sendData(String(getdiferencetotalpulse())); // exibe o diferença de pulsos entre motores
-  // setpid2.sendData(String(s(getpulse1(), getpulse2()))); // exibe distancia percorrida
-  // setpid2.sendData("quantidade para a rotacao" + String(girarroborGraus(180)));
-
-  // dualPID::ki2 = kp2;
-  // dualPID::ki2 = ki2;
-  // dualPID::kd2 = kd2;
-  // dualPID::ki1 = kp2;
-  // dualPID::ki1 = ki2;
-  // dualPID::kd1 = kd2;
-  // dualPID::setpoint1 = setpoint1;
-  // dualPID::setpoint2 = setpoint2;
 }
 
 //======================== Setup ========================
 void setup()
 {
 
-  preferences.begin("myApp", false); // Open the preferences with the namespace "myApp"
-  // Uncomment the next line to clear preferences (for testing purposes)
-  // preferences.clear();
+  pinMode(EN1, OUTPUT);
+  pinMode(EN2, OUTPUT);
+  pinMode(IN1, OUTPUT);
+  pinMode(IN2, OUTPUT);
+  pinMode(IN3, OUTPUT);
+  pinMode(IN4, OUTPUT);
+  pinMode(LED_PCB, OUTPUT);
 
-  // Read initial values from preferences
-  kp1 = preferences.getDouble(KP1_KEY, 0.0);
-  ki1 = preferences.getDouble(KI1_KEY, 0.0);
-  kd1 = preferences.getDouble(KD1_KEY, 0.0);
-  kp2 = preferences.getDouble(KP2_KEY, 0.0);
-  ki2 = preferences.getDouble(KI2_KEY, 0.0);
-  kd2 = preferences.getDouble(KD2_KEY, 0.0);
-  setpoint1 = preferences.getDouble(SETPOINT1_KEY, 0.0);
-  setpoint2 = preferences.getDouble(SETPOINT2_KEY, 0.0);
-  preferences.end();
+  digitalWrite(EN1, LOW);
+  digitalWrite(EN2, LOW);
+  digitalWrite(IN1, LOW);
+  digitalWrite(IN2, LOW);
+  digitalWrite(IN3, LOW);
+  digitalWrite(IN3, LOW);
 
-  setpid2.init();
-  setpid2.sendData("kpa: " + String(kp1) + " kia: " + String(ki1) + " kda: " + String(kd1) + " | " + " kpb: " + String(kp2) + " kib: " + String(ki2) + " kdb: " + String(kd2) + " | " + " setpoint1: " + String(setpoint1) + " setpoint2: " + String(setpoint2));
-  motor.stop();
-
+  // motor.stop();
   analogWriteResolution(10);
   startEncoder(M1_S2, M2_S1);
 
   SPI.begin();        // Inicializa a biblioteca SPI para comunicação com o módulo RFID
   mfrc522.PCD_Init(); // Inicializa o módulo RFID
   // RFID::addCardTwoFunctions( 0x104a4913, myFunction111 ,myFunction2);
-  RFID::addCardFunction(0x104a4913, gravarEPROM);
-  RFID::addCardTwoFunctions(0x10602403, startMotor, StopMotor);
+  // RFID::addCardTwoFunctions(0x10602403, startMotor, StopMotor);
 
-  btsetup();
-  // SerialBT.setPin(pin_bt);
-
-  MyDerivedClass::kp1 = kp1;
-  MyDerivedClass::ki1 = ki1;
-  MyDerivedClass::kd1 = kd1;
-  MyDerivedClass::kp2 = kp2;
-  MyDerivedClass::ki2 = ki2;
-  MyDerivedClass::kd2 = kd2;
-  MyDerivedClass::setpoint1 = setpoint1;
-  MyDerivedClass::setpoint2 = setpoint2;
-}
-
-void sendESPNOW()
-{
-  if (ESPNOWmsgtime.update())
-  {
-    setpid2.sendData("setpoint1:" + String(setpoint1) + ", " + "setpoint2:" + String(setpoint2) + ", " + "input1:" + String(input1) + ", " + "input2:" + String(input2) + ", " + "output1:" + String(output1) + ", " + "output2:" + String(output1) + ", " + "diferença:" + String(getdiferencetotalpulse())); // exibe o valor do sensor
-                                                                                                                                                                                                                                                                                                               // setpid2.sendData(String(gettotalpulse1()) + "," + String(gettotalpulse2())); // exibe o total de pulsos
-                                                                                                                                                                                                                                                                                                               // setpid2.sendData(String(getdiferencetotalpulse())); // exibe o diferença de pulsos entre motores
-                                                                                                                                                                                                                                                                                                               // setpid2.sendData(String(s(getpulse1(), getpulse2()))); // exibe distancia percorrida
-                                                                                                                                                                                                                                                                                                               // setpid2.sendData("quantidade para a rotacao" + String(girarroborGraus(180)));
-  }
-}
-
-void PIDcomputer()
-{
-  if (move)
-  {
-
-    //loopPID(getEncSpeed1(), getEncSpeed2());
-    myPID1.Compute();
-    myPID2.Compute();
-    motor.setSpeed(output1, output2);
-    sendESPNOW();
-  }
+  // btsetup();
+  //  SerialBT.setPin(pin_bt);
+  // bluetooth();
+  // bluetoothPID();
 }
 
 //======================== Loop ========================
 void loop()
 {
-  setpid2.loop();
   updateEncoder();
   input1 = EncSpeed1;
   input2 = EncSpeed2;
-  btloop();
+  // btloop();
 
   RFID::checkRFIDPresent(mfrc522);
-  PIDcomputer();
-
-  kp1 = MyDerivedClass::kp1;
-  ki1 = MyDerivedClass::ki1;
-  kd1 = MyDerivedClass::kd1;
-  kp2 = MyDerivedClass::kp2;
-  ki2 = MyDerivedClass::ki2;
-  kd2 = MyDerivedClass::kd2;
-  setpoint1 = MyDerivedClass::setpoint1;
-  setpoint2 = MyDerivedClass::setpoint2;
-  // dualPID::kp2 = kp2;
-  // dualPID::ki2 = ki2;
-  // dualPID::kd2 = kd2;
-  // dualPID::kp1 = kp1;
-  // dualPID::ki1 = ki1;
-  // dualPID::kd1 = kd1;
-  // dualPID::setpoint1 = setpoint1;
-  // dualPID::setpoint2 = setpoint2;
-
-  //   if (s(getpulse1(), getpulse2()) >= 0.2)
-  // {
-  //   StopMotor();
-  // }
-
-  // if (frente)
-  // {
-  //   if (gettotalpulse1() >= moverpordistancia(0.8)) // mudei contagem encoder logo edometria falta consetar
-  //   {
-  //     // frente = false;
-  //     setpid2.sendData("totalpulsos1=" + String(gettotalpulse1()) + " totalpulsos2=" + String(gettotalpulse2()));
-  //     StopMotor();
-
-  //     // gira = true;
-  //     delay(500);
-  //     // startMotor();
-  //   }
-  // }
-
-  // if (gira)
-  // {
-  //   if (gettotalpulse1() >= moverpordistancia(0.8))
-  //   {
-  //     frente = true;
-  //     gira = false;
-  //     setpid2.sendData("total " + String(gettotalpulse1()));
-  //     StopMotor();
-  //     delay(500);
-  //   }
-  // }
-
-  if (pulseTotalCountEncoder1 < 1 && pulseTotalCountEncoder2 < 1)
-  { // regula a velocidade de subida do pid quando o robo esta parado
-
-    timeCountEncoder = 50;
-  }
-  else
+  if (move)
   {
-    timeCountEncoder = 250;
+    myPID1.Compute();
+    myPID2.Compute();
+    analogWrite(EN1, output1);
+    analogWrite(EN2, output2);
   }
+
+  rfid();
+
+  if (conteudo.substring(1) == tagBluetooth_1 || conteudo.substring(1) == tagBluetooth_2 || conteudo.substring(1) == tagBluetooth_3)
+  {
+    // bluetooth();
+    bluetoothPID();
+  }
+  if (conteudo.substring(1) == tagSonar_1 || conteudo.substring(1) == tagSonar_2 || conteudo.substring(1) == tagSonar_3)
+  {
+    sonar();
+  }
+}
+
+void bluetooth()
+{
+  digitalWrite(LED_PCB, HIGH);
+  delay(400);
+  digitalWrite(LED_PCB, LOW);
+  digitalWrite(IN1, LOW);
+  digitalWrite(IN2, LOW);
+  digitalWrite(IN3, LOW);
+  digitalWrite(IN4, LOW);
+
+  BT.begin(btnome);
+  delay(1500);
+
+  while (true)
+  {
+    if (btdata == 'a')
+    {
+      digitalWrite(LED_PCB, HIGH);
+      delay(1000);
+      digitalWrite(LED_PCB, LOW);
+      delay(1000);
+      if (BT.available())
+      {
+        btdata = BT.read();
+      }
+      conteudo = "";
+      // rfid();
+      // if (conteudo.substring(1) == tagBluetooth_1 || conteudo.substring(1) == tagBluetooth_2 || conteudo.substring(1) == tagBluetooth_3) {
+      //   BT.disconnect();
+      //   BT.end();
+      //   reset();
+      //   return;
+      // }
+    }
+
+    else
+    {
+      if (BT.available())
+      {
+        btdata = BT.read();
+      }
+
+      if (btdata == '1')
+      {
+        analogWrite(EN1, 100);
+        analogWrite(EN2, 100);
+      }
+
+      if (btdata == '2')
+      {
+        analogWrite(EN1, 150);
+        analogWrite(EN2, 150);
+      }
+
+      if (btdata == '3')
+      {
+        analogWrite(EN1, 200);
+        analogWrite(EN2, 200);
+      }
+
+      if (btdata == '4')
+      {
+        analogWrite(EN1, 250);
+        analogWrite(EN2, 250);
+      }
+
+      if (btdata == '5')
+      {
+        analogWrite(EN1, 300);
+        analogWrite(EN2, 300);
+      }
+
+      if (btdata == '6')
+      {
+        analogWrite(EN1, 350);
+        analogWrite(EN2, 350);
+      }
+
+      if (btdata == '7')
+      {
+        analogWrite(EN1, 400);
+        analogWrite(EN2, 400);
+      }
+
+      if (btdata == '8')
+      {
+        analogWrite(EN1, 450);
+        analogWrite(EN2, 450);
+      }
+
+      if (btdata == '9')
+      {
+        analogWrite(EN1, 500);
+        analogWrite(EN2, 500);
+      }
+
+      if (btdata == 'q')
+      {
+        analogWrite(EN1, 550);
+        analogWrite(EN2, 550);
+      }
+
+      // Foward
+      if (btdata == 'F')
+      {
+        digitalWrite(IN1, HIGH);
+        digitalWrite(IN2, LOW);
+        digitalWrite(IN3, LOW);
+        digitalWrite(IN4, HIGH);
+      }
+
+      // Back
+      else if (btdata == 'B')
+      {
+        digitalWrite(IN1, LOW);
+        digitalWrite(IN2, HIGH);
+        digitalWrite(IN3, HIGH);
+        digitalWrite(IN4, LOW);
+      }
+
+      // Left
+      else if (btdata == 'L')
+      {
+        digitalWrite(IN1, HIGH);
+        digitalWrite(IN2, LOW);
+        digitalWrite(IN3, HIGH);
+        digitalWrite(IN4, LOW);
+      }
+
+      // Right
+      else if (btdata == 'R')
+      {
+        digitalWrite(IN1, LOW);
+        digitalWrite(IN2, HIGH);
+        digitalWrite(IN3, LOW);
+        digitalWrite(IN4, HIGH);
+      }
+
+      // Stop
+      else if (btdata == 'S')
+      {
+        digitalWrite(IN1, LOW);
+        digitalWrite(IN2, LOW);
+        digitalWrite(IN3, LOW);
+        digitalWrite(IN4, LOW);
+      }
+
+      else if (btdata == 'V')
+      {
+        digitalWrite(LED_PCB, HIGH);
+      }
+
+      else if (btdata == 'v')
+      {
+        digitalWrite(LED_PCB, LOW);
+      }
+
+      else if (btdata == 'X' || btdata == 'x')
+      {
+        BT.disconnect();
+        BT.end();
+        // reset();
+        return;
+      }
+
+      delay(20);
+    }
+  }
+}
+
+void bluetoothPID()
+{
+  digitalWrite(LED_PCB, HIGH);
+  delay(100);
+  digitalWrite(LED_PCB, LOW);
+  digitalWrite(IN1, LOW);
+  digitalWrite(IN2, LOW);
+  digitalWrite(IN3, LOW);
+  digitalWrite(IN4, LOW);
+
+  myPID1.SetOutputLimits(150, 500); // PWM 10bits vai de 0 a 1023
+  myPID2.SetOutputLimits(150, 500);
+  myPID1.SetMode(AUTOMATIC);
+  myPID2.SetMode(AUTOMATIC);
+
+  BT.begin(btnome);
+  delay(1500);
+
+  while (true)
+  {
+    if (btdata == 'a')
+    {
+      digitalWrite(LED_PCB, HIGH);
+      delay(1000);
+      digitalWrite(LED_PCB, LOW);
+      delay(1000);
+      if (BT.available())
+      {
+        btdata = BT.read();
+      }
+      conteudo = "";
+      // rfid();
+      // if (conteudo.substring(1) == tagBluetooth_1 || conteudo.substring(1) == tagBluetooth_2 || conteudo.substring(1) == tagBluetooth_3) {
+      //   BT.disconnect();
+      //   BT.end();
+      //   reset();
+      //   return;
+      // }
+    }
+
+    else
+    {
+      if (BT.available())
+      {
+        btdata = BT.read();
+      }
+
+      if (btdata == '1')
+      {
+
+        setpoint1 = 100;
+        setpoint2 = 100;
+      }
+
+      if (btdata == '2')
+      {
+        setpoint1 = 150;
+        setpoint2 = 150;
+      }
+
+      if (btdata == '3')
+      {
+        setpoint1 = 200;
+        setpoint2 = 200;
+      }
+
+      if (btdata == '4')
+      {
+        setpoint1 = 250;
+        setpoint2 = 250;
+      }
+
+      if (btdata == '5')
+      {
+        setpoint1 = 100;
+        setpoint2 = 100;
+      }
+
+      if (btdata == '6')
+      {
+        setpoint1 = 100;
+        setpoint2 = 100;
+      }
+
+      if (btdata == '7')
+      {
+        setpoint1 = 100;
+        setpoint2 = 100;
+      }
+
+      if (btdata == '8')
+      {
+        setpoint1 = 100;
+        setpoint2 = 100;
+      }
+
+      if (btdata == '9')
+      {
+        setpoint1 = 100;
+        setpoint2 = 100;
+      }
+
+      if (btdata == 'q')
+      {
+        setpoint1 = 300;
+        setpoint2 = 300;
+      }
+
+      // Foward
+      if (btdata == 'F')
+      {
+        digitalWrite(IN1, HIGH);
+        digitalWrite(IN2, LOW);
+        digitalWrite(IN3, LOW);
+        digitalWrite(IN4, HIGH);
+      }
+
+      // Back
+      else if (btdata == 'B')
+      {
+        digitalWrite(IN1, LOW);
+        digitalWrite(IN2, HIGH);
+        digitalWrite(IN3, HIGH);
+        digitalWrite(IN4, LOW);
+      }
+
+      // Left
+      else if (btdata == 'L')
+      {
+        digitalWrite(IN1, HIGH);
+        digitalWrite(IN2, LOW);
+        digitalWrite(IN3, HIGH);
+        digitalWrite(IN4, LOW);
+      }
+
+      // Right
+      else if (btdata == 'R')
+      {
+        digitalWrite(IN1, LOW);
+        digitalWrite(IN2, HIGH);
+        digitalWrite(IN3, LOW);
+        digitalWrite(IN4, HIGH);
+      }
+
+      // Stop
+      else if (btdata == 'S')
+      {
+        digitalWrite(IN1, LOW);
+        digitalWrite(IN2, LOW);
+        digitalWrite(IN3, LOW);
+        digitalWrite(IN4, LOW);
+      }
+
+      else if (btdata == 'V')
+      {
+        digitalWrite(LED_PCB, HIGH);
+      }
+
+      else if (btdata == 'v')
+      {
+        digitalWrite(LED_PCB, LOW);
+      }
+
+      else if (btdata == 'X' || btdata == 'x')
+      {
+        BT.disconnect();
+        BT.end();
+        // reset();
+        return;
+      }
+
+      delay(20);
+      analogWrite(EN1, output1);
+      analogWrite(EN2, output2);
+      myPID1.Compute();
+      myPID2.Compute();
+    }
+  }
+}
+
+int distance()
+{
+  digitalWrite(TRIG_PIN, LOW);
+  digitalWrite(TRIG_PIN, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TRIG_PIN, LOW);
+  return (pulseIn(ECHO_PIN, HIGH)) / 58;
+}
+
+void sonar()
+{
+  digitalWrite(LED_PCB, HIGH);
+  delay(100);
+  digitalWrite(LED_PCB, LOW);
+  delay(1500);
+  while (true)
+  {
+    if (distance() < 15)
+    {
+      while (true)
+      {
+        digitalWrite(IN1, LOW);
+        digitalWrite(IN2, HIGH);
+        digitalWrite(IN3, HIGH);
+        digitalWrite(IN4, LOW);
+        analogWrite(EN1, 300);
+        analogWrite(EN2, 300);
+        delay(500);
+        if (random(2) == 0)
+        {
+          digitalWrite(IN1, LOW);
+          digitalWrite(IN2, HIGH);
+          digitalWrite(IN3, LOW);
+          digitalWrite(IN4, HIGH);
+        }
+        else
+        {
+          digitalWrite(IN1, HIGH);
+          digitalWrite(IN2, LOW);
+          digitalWrite(IN3, HIGH);
+          digitalWrite(IN4, LOW);
+        }
+        analogWrite(EN1, 300);
+        analogWrite(EN2, 300);
+        delay(500); // tempo giro
+        break;
+      }
+    }
+    else
+    {
+      digitalWrite(IN1, HIGH);
+      digitalWrite(IN2, LOW);
+      digitalWrite(IN3, LOW);
+      digitalWrite(IN4, HIGH);
+      analogWrite(EN1, 300);
+      analogWrite(EN2, 300);
+      conteudo = "";
+      rfid();
+      if (conteudo.substring(1) == tagSonar_1 || conteudo.substring(1) == tagSonar_2 || conteudo.substring(1) == tagSonar_3)
+      {
+        reset();
+        return;
+      }
+    }
+  }
+}
+
+void reset()
+{
+  // speed1 = 0;
+  // speed2 = 0;
+  analogWrite(EN1, 0);
+  analogWrite(EN2, 0);
+  btdata = 'a';
+  // resetData();
+  digitalWrite(LED_PCB, HIGH);
+  delay(100);
+  digitalWrite(LED_PCB, LOW);
+  delay(1500);
 }
