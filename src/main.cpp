@@ -10,8 +10,9 @@
 #include <Arduino.h>
 #include <Preferences.h>
 #include <NoDelay.h>
-#include "MultiEncoder.h"
-#include "dualpid.h"
+#include <PID_v1.h>
+//#include "MultiEncoder.h"
+// #include "dualpid.h"
 #include "Pins.h"
 #include "rfid_functions.h"
 #include "MotorDriver.h"
@@ -26,6 +27,17 @@ double ki1, ki2;
 double kd1, kd2;
 double setpoint1, setpoint2;
 double setpoint1_, setpoint2_;
+double input1, output1;
+double input2, output2;
+
+int timeCountEncoder = 250; // Se necessário, ajuste o intervalo em milisegundos de contagem dos pulsos .
+volatile int EncSpeed1 = 0;
+volatile int EncSpeed2 = 0;
+volatile int pulseCount1 = 0;
+volatile int pulseCount2 = 0;
+volatile int pulseTotalCountEncoder1 = 0;
+volatile int pulseTotalCountEncoder2 = 0;
+volatile unsigned long lastUpdateTime = 0;
 
 noDelay ESPNOWmsgtime(1000); // Creats a noDelay varible set to 1000ms
 
@@ -54,59 +66,89 @@ bool viraD = false;
 uint8_t macAddress2Esp32[] = {0xB8, 0xD6, 0x1A, 0x47, 0x62, 0x8C}; // tiago ESP32 38 PIN
 
 // Instâncias de classes
-dualPID dualpid;
+// dualPID dualpid;
 MyDerivedClass setpid2(macAddress2Esp32);
 Preferences preferences;
 MFRC522 mfrc522(SS_RFID_PIN, RST_RFID_PIN);
 MotorDriver motor(EN1, IN1, IN2, EN2, IN4, IN3);
 
+PID myPID1(&input1, &output1, &setpoint1, kp1, ki1, kd1, DIRECT);
+PID myPID2(&input2, &output2, &setpoint2, kp2, ki2, kd2, DIRECT);
+
 int OUTPUT_;
+
+void ICACHE_RAM_ATTR funcaoInterrupcao1()
+{
+  pulseCount1++;
+  pulseTotalCountEncoder1++;
+}
+void ICACHE_RAM_ATTR funcaoInterrupcao2()
+{
+  pulseCount2++;
+  pulseTotalCountEncoder2++;
+}
+
+void startEncoder(int pinEncoder1, int pinEncoder2)
+{
+  
+  pinMode(pinEncoder2, INPUT);
+  attachInterrupt(digitalPinToInterrupt(pinEncoder1), funcaoInterrupcao1, RISING );
+  attachInterrupt(digitalPinToInterrupt(pinEncoder2), funcaoInterrupcao2, RISING );
+}
+
+void updateEncoder()
+{
+  unsigned long currentTime = millis();
+  if (currentTime - lastUpdateTime >= timeCountEncoder)
+  {
+    // Serial.print("Pulsos por segundo: ");
+    // Serial.println(pulseCountEncoder);
+    EncSpeed1 = pulseCount1;
+    EncSpeed2 = pulseCount2;
+    pulseCount1 = 0;
+    pulseCount2 = 0;
+    lastUpdateTime = currentTime;
+  }
+}
+
+int getdiferencetotalpulse()
+{
+  int diferenca1 = pulseTotalCountEncoder1 - pulseTotalCountEncoder2;
+  return diferenca1;
+}
+
+void PIDinit()
+{
+  myPID1.SetOutputLimits(150, 500); // PWM 10bits vai de 0 a 1023
+  myPID2.SetOutputLimits(150, 500);
+  myPID1.SetMode(AUTOMATIC);
+  myPID2.SetMode(AUTOMATIC);
+}
+
+void loopPID(int Input1, int Input2)
+{
+  input1 = Input1;
+  input2 = Input2;
+  myPID1.Compute();
+  myPID2.Compute();
+}
 
 void startMotor()
 {
   // motor.moveForward(move ? 0 : 300);  // test Operador ternário (? :) Se move for verdadeiro, escolhemos 0 (parar o motor). Se move for falso, escolhemos 300.
   // move = !move;
-  dualpid.init();
-  setpoint1 = 0;
-  setpoint2 = 0;
+  PIDinit();
+  //setpoint1 = 0;
+  //setpoint2 = 0;
   move = true;
   frente = true;
   tras = false;
   viraE = false;
   viraD = false;
 }
-
-void re()
-{
-  dualpid.init();
-  move = true;
-  frente = false;
-  tras = true;
-  viraE = false;
-  viraD = false;
-}
-void viraDireita()
-{
-  dualpid.init();
-  move = true;
-  frente = false;
-  tras = false;
-  viraE = false;
-  viraD = true;
-}
-void viraEsquerda()
-{
-  dualpid.init();
-  move = true;
-  frente = false;
-  tras = false;
-  viraE = true;
-  viraD = false;
-}
-
 void StopMotor()
 {
-  dualpid.deinit();
+  PIDinit();
   move = false;
   frente = false;
   tras = false;
@@ -115,8 +157,38 @@ void StopMotor()
   setpid2.sendData("Funcao parar ");
   setpid2.sendData("kpa: " + String(kp1) + " kia: " + String(ki1) + " kda: " + String(kd1) + " | " + " kpb: " + String(kp2) + " kib: " + String(ki2) + " kdb: " + String(kd2) + " | " + " setpoint1: " + String(setpoint1) + " setpoint2: " + String(setpoint2));
   motor.stop();
-  resettotalpulse();
+  //resettotalpulse();
 }
+
+void viraDireita()
+{
+  PIDinit();
+  move = true;
+  frente = false;
+  tras = false;
+  viraE = false;
+  viraD = true;
+}
+void viraEsquerda()
+{
+  PIDinit();
+  move = true;
+  frente = false;
+  tras = false;
+  viraE = true;
+  viraD = false;
+}
+void re()
+{
+  PIDinit();
+  move = true;
+  frente = false;
+  tras = true;
+  viraE = false;
+  viraD = false;
+}
+
+
 
 void gravarEPROM()
 {
@@ -140,10 +212,10 @@ void ComputerPID()
 {
   // dualpid.updatePID(getpulse1() * 1, getpulse2());
 
-  int out1 = dualpid.getOutput1();
-  int out2 = dualpid.getOutput2();
-  int pulse1 = getEncSpeed1();
-  int pulse2 = getEncSpeed2();
+  int out1 = output1;
+  int out2 = output2;
+  int pulse1 = EncSpeed1;
+  int pulse2 = EncSpeed2;
 
   // if (getdiferencetotalpulse() > 0) // menor que zero - vira direita
   // {
@@ -154,42 +226,42 @@ void ComputerPID()
   //   out2 = dualpid.getOutput1() - 0.05*dualpid.getOutput1() ;
   // }
 
-  if (OUTPUT_ != dualpid.getOutput2()) // verificacao obsoleta
-  {
-    OUTPUT_ = dualpid.getOutput2();
-    if (frente)
-    {
-      // motor.setSpeed(out1, out2);
-      motor.setSpeed(out1, out2);
-    }
-    if (tras)
-    {
-      motor.setSpeed(-out1, -out2);
-    }
-    if (viraE)
-    {
-      motor.setSpeed(out1, -out2);
-    }
-    if (viraD)
-    {
-      motor.setSpeed(-out1, out2);
-    }
-  }
+  // if (OUTPUT_ != output2) // verificacao obsoleta
+  // {
+  //   OUTPUT_ = output2;
+  //   if (frente)
+  //   {
+  //     // motor.setSpeed(out1, out2);
+  //     motor.setSpeed(out1, out2);
+  //   }
+  //   if (tras)
+  //   {
+  //     motor.setSpeed(-out1, -out2);
+  //   }
+  //   if (viraE)
+  //   {
+  //     motor.setSpeed(out1, -out2);
+  //   }
+  //   if (viraD)
+  //   {
+  //     motor.setSpeed(-out1, out2);
+  //   }
+  // }
 
-  setpid2.sendData("setpoint1:" + String(dualPID::setpoint1) + ", " + "setpoint2:" + String(dualPID::setpoint2) + ", " + "input1:" + String(dualpid.getInput1()) + ", " + "input2:" + String(dualpid.getInput2()) + ", " + "output1:" + String(dualpid.getOutput1()) + ", " + "output2:" + String(dualpid.getOutput2()) + ", " + "diferença:" + String(getdiferencetotalpulse())); // exibe o valor do sensor
+  setpid2.sendData("setpoint1:" + String(setpoint1) + ", " + "setpoint2:" + String(setpoint2) + ", " + "input1:" + String(input1) + ", " + "input2:" + String(input2) + ", " + "output1:" + String(output1) + ", " + "output2:" + String(output1) + ", " + "diferença:" + String(getdiferencetotalpulse())); // exibe o valor do sensor
   // setpid2.sendData(String(gettotalpulse1()) + "," + String(gettotalpulse2())); // exibe o total de pulsos
   // setpid2.sendData(String(getdiferencetotalpulse())); // exibe o diferença de pulsos entre motores
   // setpid2.sendData(String(s(getpulse1(), getpulse2()))); // exibe distancia percorrida
   // setpid2.sendData("quantidade para a rotacao" + String(girarroborGraus(180)));
 
-  dualPID::ki2 = kp2;
-  dualPID::ki2 = ki2;
-  dualPID::kd2 = kd2;
-  dualPID::ki1 = kp2;
-  dualPID::ki1 = ki2;
-  dualPID::kd1 = kd2;
-  dualPID::setpoint1 = setpoint1;
-  dualPID::setpoint2 = setpoint2;
+  // dualPID::ki2 = kp2;
+  // dualPID::ki2 = ki2;
+  // dualPID::kd2 = kd2;
+  // dualPID::ki1 = kp2;
+  // dualPID::ki1 = ki2;
+  // dualPID::kd1 = kd2;
+  // dualPID::setpoint1 = setpoint1;
+  // dualPID::setpoint2 = setpoint2;
 }
 
 //======================== Setup ========================
@@ -241,11 +313,11 @@ void sendESPNOW()
 {
   if (ESPNOWmsgtime.update())
   {
-    setpid2.sendData("setpoint1:" + String(dualPID::setpoint1) + ", " + "setpoint2:" + String(dualPID::setpoint2) + ", " + "input1:" + String(dualpid.getInput1()) + ", " + "input2:" + String(dualpid.getInput2()) + ", " + "output1:" + String(dualpid.getOutput1()) + ", " + "output2:" + String(dualpid.getOutput2()) + ", " + "diferença:" + String(getdiferencetotalpulse())); // exibe o valor do sensor
-    // setpid2.sendData(String(gettotalpulse1()) + "," + String(gettotalpulse2())); // exibe o total de pulsos
-    // setpid2.sendData(String(getdiferencetotalpulse())); // exibe o diferença de pulsos entre motores
-    // setpid2.sendData(String(s(getpulse1(), getpulse2()))); // exibe distancia percorrida
-    // setpid2.sendData("quantidade para a rotacao" + String(girarroborGraus(180)));
+    setpid2.sendData("setpoint1:" + String(setpoint1) + ", " + "setpoint2:" + String(setpoint2) + ", " + "input1:" + String(input1) + ", " + "input2:" + String(input2) + ", " + "output1:" + String(output1) + ", " + "output2:" + String(output1) + ", " + "diferença:" + String(getdiferencetotalpulse())); // exibe o valor do sensor
+                                                                                                                                                                                                                                                                                                               // setpid2.sendData(String(gettotalpulse1()) + "," + String(gettotalpulse2())); // exibe o total de pulsos
+                                                                                                                                                                                                                                                                                                               // setpid2.sendData(String(getdiferencetotalpulse())); // exibe o diferença de pulsos entre motores
+                                                                                                                                                                                                                                                                                                               // setpid2.sendData(String(s(getpulse1(), getpulse2()))); // exibe distancia percorrida
+                                                                                                                                                                                                                                                                                                               // setpid2.sendData("quantidade para a rotacao" + String(girarroborGraus(180)));
   }
 }
 
@@ -253,19 +325,22 @@ void PIDcomputer()
 {
   if (move)
   {
-    dualpid.loopPID(getEncSpeed1(), getEncSpeed2());
-    int out1 = dualpid.getOutput1();
-    int out2 = dualpid.getOutput2();
-    motor.setSpeed(out1, out2);
+
+    //loopPID(getEncSpeed1(), getEncSpeed2());
+    myPID1.Compute();
+    myPID2.Compute();
+    motor.setSpeed(output1, output2);
     sendESPNOW();
   }
 }
 
-
 //======================== Loop ========================
 void loop()
 {
-
+  setpid2.loop();
+  updateEncoder();
+  input1 = EncSpeed1;
+  input2 = EncSpeed2;
   btloop();
 
   RFID::checkRFIDPresent(mfrc522);
@@ -279,14 +354,14 @@ void loop()
   kd2 = MyDerivedClass::kd2;
   setpoint1 = MyDerivedClass::setpoint1;
   setpoint2 = MyDerivedClass::setpoint2;
-  dualPID::kp2 = kp2;
-  dualPID::ki2 = ki2;
-  dualPID::kd2 = kd2;
-  dualPID::kp1 = kp1;
-  dualPID::ki1 = ki1;
-  dualPID::kd1 = kd1;
-  dualPID::setpoint1 = setpoint1;
-  dualPID::setpoint2 = setpoint2;
+  // dualPID::kp2 = kp2;
+  // dualPID::ki2 = ki2;
+  // dualPID::kd2 = kd2;
+  // dualPID::kp1 = kp1;
+  // dualPID::ki1 = ki1;
+  // dualPID::kd1 = kd1;
+  // dualPID::setpoint1 = setpoint1;
+  // dualPID::setpoint2 = setpoint2;
 
   //   if (s(getpulse1(), getpulse2()) >= 0.2)
   // {
@@ -319,7 +394,7 @@ void loop()
   //   }
   // }
 
-  if (gettotalpulse1() < 1 && gettotalpulse2() < 1)
+  if (pulseTotalCountEncoder1 < 1 && pulseTotalCountEncoder2 < 1)
   { // regula a velocidade de subida do pid quando o robo esta parado
 
     timeCountEncoder = 50;
