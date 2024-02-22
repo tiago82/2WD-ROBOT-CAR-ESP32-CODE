@@ -16,7 +16,6 @@
 #include "rfid_functions.h"
 #include <Ultrasonic.h>
 
-
 // Shift + Alt + F format code
 
 #define tagMu_1 "13 5A 43 10"
@@ -50,8 +49,8 @@ double kd1 = 0.0;
 double kp2 = 0.6;
 double ki2 = 0.5;
 double kd2 = 0.0;
-double setpoint1 = 250;
-double setpoint2 = 250;
+double setpoint1 = 0;
+double setpoint2 = 0;
 double input1, output1;
 double input2, output2;
 
@@ -334,175 +333,175 @@ void loop()
   }
 }
 
-void bluetooth()
-{
-  digitalWrite(LED_PCB, HIGH);
-  delay(400);
-  digitalWrite(LED_PCB, LOW);
-  digitalWrite(IN1, LOW);
-  digitalWrite(IN2, LOW);
-  digitalWrite(IN3, LOW);
-  digitalWrite(IN4, LOW);
+// void bluetooth()
+// {
+//   digitalWrite(LED_PCB, HIGH);
+//   delay(400);
+//   digitalWrite(LED_PCB, LOW);
+//   digitalWrite(IN1, LOW);
+//   digitalWrite(IN2, LOW);
+//   digitalWrite(IN3, LOW);
+//   digitalWrite(IN4, LOW);
 
-  BT.begin(btnome);
-  delay(1500);
+//   BT.begin(btnome);
+//   delay(1500);
 
-  while (true)
-  {
-    if (btdata == 'a')
-    {
-      digitalWrite(LED_PCB, HIGH);
-      delay(1000);
-      digitalWrite(LED_PCB, LOW);
-      delay(1000);
-      if (BT.available())
-      {
-        btdata = BT.read();
-      }
-      conteudo = "";
-      // rfid();
-      // if (conteudo.substring(1) == tagBluetooth_1 || conteudo.substring(1) == tagBluetooth_2 || conteudo.substring(1) == tagBluetooth_3) {
-      //   BT.disconnect();
-      //   BT.end();
-      //   reset();
-      //   return;
-      // }
-    }
+//   while (true)
+//   {
+//     if (btdata == 'a')
+//     {
+//       digitalWrite(LED_PCB, HIGH);
+//       delay(1000);
+//       digitalWrite(LED_PCB, LOW);
+//       delay(1000);
+//       if (BT.available())
+//       {
+//         btdata = BT.read();
+//       }
+//       conteudo = "";
+//       // rfid();
+//       // if (conteudo.substring(1) == tagBluetooth_1 || conteudo.substring(1) == tagBluetooth_2 || conteudo.substring(1) == tagBluetooth_3) {
+//       //   BT.disconnect();
+//       //   BT.end();
+//       //   reset();
+//       //   return;
+//       // }
+//     }
 
-    else
-    {
-      if (BT.available())
-      {
-        btdata = BT.read();
-      }
+//     else
+//     {
+//       if (BT.available())
+//       {
+//         btdata = BT.read();
+//       }
 
-      if (btdata == '1')
-      {
-        analogWrite(EN1, 100);
-        analogWrite(EN2, 100);
-      }
+//       if (btdata == '1')
+//       {
+//         analogWrite(EN1, 100);
+//         analogWrite(EN2, 100);
+//       }
 
-      if (btdata == '2')
-      {
-        analogWrite(EN1, 150);
-        analogWrite(EN2, 150);
-      }
+//       if (btdata == '2')
+//       {
+//         analogWrite(EN1, 150);
+//         analogWrite(EN2, 150);
+//       }
 
-      if (btdata == '3')
-      {
-        analogWrite(EN1, 200);
-        analogWrite(EN2, 200);
-      }
+//       if (btdata == '3')
+//       {
+//         analogWrite(EN1, 200);
+//         analogWrite(EN2, 200);
+//       }
 
-      if (btdata == '4')
-      {
-        analogWrite(EN1, 250);
-        analogWrite(EN2, 250);
-      }
+//       if (btdata == '4')
+//       {
+//         analogWrite(EN1, 250);
+//         analogWrite(EN2, 250);
+//       }
 
-      if (btdata == '5')
-      {
-        analogWrite(EN1, 300);
-        analogWrite(EN2, 300);
-      }
+//       if (btdata == '5')
+//       {
+//         analogWrite(EN1, 300);
+//         analogWrite(EN2, 300);
+//       }
 
-      if (btdata == '6')
-      {
-        analogWrite(EN1, 350);
-        analogWrite(EN2, 350);
-      }
+//       if (btdata == '6')
+//       {
+//         analogWrite(EN1, 350);
+//         analogWrite(EN2, 350);
+//       }
 
-      if (btdata == '7')
-      {
-        analogWrite(EN1, 400);
-        analogWrite(EN2, 400);
-      }
+//       if (btdata == '7')
+//       {
+//         analogWrite(EN1, 400);
+//         analogWrite(EN2, 400);
+//       }
 
-      if (btdata == '8')
-      {
-        analogWrite(EN1, 450);
-        analogWrite(EN2, 450);
-      }
+//       if (btdata == '8')
+//       {
+//         analogWrite(EN1, 450);
+//         analogWrite(EN2, 450);
+//       }
 
-      if (btdata == '9')
-      {
-        analogWrite(EN1, 500);
-        analogWrite(EN2, 500);
-      }
+//       if (btdata == '9')
+//       {
+//         analogWrite(EN1, 500);
+//         analogWrite(EN2, 500);
+//       }
 
-      if (btdata == 'q')
-      {
-        analogWrite(EN1, 550);
-        analogWrite(EN2, 550);
-      }
+//       if (btdata == 'q')
+//       {
+//         analogWrite(EN1, 550);
+//         analogWrite(EN2, 550);
+//       }
 
-      // Foward
-      if (btdata == 'F')
-      {
-        digitalWrite(IN1, HIGH);
-        digitalWrite(IN2, LOW);
-        digitalWrite(IN3, LOW);
-        digitalWrite(IN4, HIGH);
-      }
+//       // Foward
+//       if (btdata == 'F')
+//       {
+//         digitalWrite(IN1, HIGH);
+//         digitalWrite(IN2, LOW);
+//         digitalWrite(IN3, LOW);
+//         digitalWrite(IN4, HIGH);
+//       }
 
-      // Back
-      else if (btdata == 'B')
-      {
-        digitalWrite(IN1, LOW);
-        digitalWrite(IN2, HIGH);
-        digitalWrite(IN3, HIGH);
-        digitalWrite(IN4, LOW);
-      }
+//       // Back
+//       else if (btdata == 'B')
+//       {
+//         digitalWrite(IN1, LOW);
+//         digitalWrite(IN2, HIGH);
+//         digitalWrite(IN3, HIGH);
+//         digitalWrite(IN4, LOW);
+//       }
 
-      // Left
-      else if (btdata == 'L')
-      {
-        digitalWrite(IN1, HIGH);
-        digitalWrite(IN2, LOW);
-        digitalWrite(IN3, HIGH);
-        digitalWrite(IN4, LOW);
-      }
+//       // Left
+//       else if (btdata == 'L')
+//       {
+//         digitalWrite(IN1, HIGH);
+//         digitalWrite(IN2, LOW);
+//         digitalWrite(IN3, HIGH);
+//         digitalWrite(IN4, LOW);
+//       }
 
-      // Right
-      else if (btdata == 'R')
-      {
-        digitalWrite(IN1, LOW);
-        digitalWrite(IN2, HIGH);
-        digitalWrite(IN3, LOW);
-        digitalWrite(IN4, HIGH);
-      }
+//       // Right
+//       else if (btdata == 'R')
+//       {
+//         digitalWrite(IN1, LOW);
+//         digitalWrite(IN2, HIGH);
+//         digitalWrite(IN3, LOW);
+//         digitalWrite(IN4, HIGH);
+//       }
 
-      // Stop
-      else if (btdata == 'S')
-      {
-        digitalWrite(IN1, LOW);
-        digitalWrite(IN2, LOW);
-        digitalWrite(IN3, LOW);
-        digitalWrite(IN4, LOW);
-      }
+//       // Stop
+//       else if (btdata == 'S')
+//       {
+//         digitalWrite(IN1, LOW);
+//         digitalWrite(IN2, LOW);
+//         digitalWrite(IN3, LOW);
+//         digitalWrite(IN4, LOW);
+//       }
 
-      else if (btdata == 'V')
-      {
-        digitalWrite(LED_PCB, HIGH);
-      }
+//       else if (btdata == 'V')
+//       {
+//         digitalWrite(LED_PCB, HIGH);
+//       }
 
-      else if (btdata == 'v')
-      {
-        digitalWrite(LED_PCB, LOW);
-      }
+//       else if (btdata == 'v')
+//       {
+//         digitalWrite(LED_PCB, LOW);
+//       }
 
-      else if (btdata == 'X' || btdata == 'x')
-      {
-        BT.disconnect();
-        BT.end();
-        // reset();
-        return;
-      }
+//       else if (btdata == 'X' || btdata == 'x')
+//       {
+//         BT.disconnect();
+//         BT.end();
+//         // reset();
+//         return;
+//       }
 
-      delay(20);
-    }
-  }
-}
+//       delay(20);
+//     }
+//   }
+// }
 
 void bluetoothPID()
 {
@@ -516,14 +515,16 @@ void bluetoothPID()
 
   myPID1.SetOutputLimits(150, 500); // PWM 10bits vai de 0 a 1023
   myPID2.SetOutputLimits(150, 500);
-  myPID1.SetMode(AUTOMATIC);
-  myPID2.SetMode(AUTOMATIC);
 
   BT.begin(btnome);
   delay(1500);
 
   while (true)
   {
+    updateEncoder();
+    input1 = EncSpeed1;
+    input2 = EncSpeed2;
+
     if (btdata == 'a')
     {
       digitalWrite(LED_PCB, HIGH);
@@ -554,67 +555,69 @@ void bluetoothPID()
       if (btdata == '1')
       {
 
-        setpoint1 = 100;
-        setpoint2 = 100;
-      }
-
-      if (btdata == '2')
-      {
-        setpoint1 = 150;
-        setpoint2 = 150;
-      }
-
-      if (btdata == '3')
-      {
-        setpoint1 = 200;
-        setpoint2 = 200;
-      }
-
-      if (btdata == '4')
-      {
         setpoint1 = 250;
         setpoint2 = 250;
       }
 
-      if (btdata == '5')
-      {
-        setpoint1 = 100;
-        setpoint2 = 100;
-      }
+      // if (btdata == '2')
+      // {
+      //   setpoint1 = 250;
+      //   setpoint2 = 240;
+      // }
 
-      if (btdata == '6')
-      {
-        setpoint1 = 100;
-        setpoint2 = 100;
-      }
+      // if (btdata == '3')
+      // {
+      //   setpoint1 = 250;
+      //   setpoint2 = 240;
+      // }
 
-      if (btdata == '7')
-      {
-        setpoint1 = 100;
-        setpoint2 = 100;
-      }
+      // if (btdata == '4')
+      // {
+      //   setpoint1 = 250;
+      //   setpoint2 = 240;
+      // }
 
-      if (btdata == '8')
-      {
-        setpoint1 = 100;
-        setpoint2 = 100;
-      }
+      // if (btdata == '5')
+      // {
+      //   setpoint1 = 250;
+      //   setpoint2 = 240;
+      // }
 
-      if (btdata == '9')
-      {
-        setpoint1 = 100;
-        setpoint2 = 100;
-      }
+      // if (btdata == '6')
+      // {
+      //   setpoint1 = 250;
+      //   setpoint2 = 240;
+      // }
 
-      if (btdata == 'q')
-      {
-        setpoint1 = 300;
-        setpoint2 = 300;
-      }
+      // if (btdata == '7')
+      // {
+      //   setpoint1 = 250;
+      //   setpoint2 = 240;
+      // }
+
+      // if (btdata == '8')
+      // {
+      //   setpoint1 = 250;
+      //   setpoint2 = 240;
+      // }
+
+      // if (btdata == '9')
+      // {
+      //   setpoint1 = 250;
+      //   setpoint2 = 240;
+      // }
+
+      // if (btdata == 'q')
+      // {
+      //   setpoint1 = 250;
+      //   setpoint2 = 240;
+      // }
 
       // Foward
       if (btdata == 'F')
       {
+        myPID1.SetMode(AUTOMATIC);
+        myPID2.SetMode(AUTOMATIC);
         digitalWrite(IN1, HIGH);
         digitalWrite(IN2, LOW);
         digitalWrite(IN3, LOW);
@@ -651,6 +654,8 @@ void bluetoothPID()
       // Stop
       else if (btdata == 'S')
       {
+        myPID1.SetMode(MANUAL);
+        myPID2.SetMode(MANUAL);
         digitalWrite(IN1, LOW);
         digitalWrite(IN2, LOW);
         digitalWrite(IN3, LOW);
@@ -728,7 +733,7 @@ void sonar()
         }
         analogWrite(EN1, 300);
         analogWrite(EN2, 300);
-        delay(500); // tempo giro
+        delay(500); // tempo de giro
         break;
       }
     }
